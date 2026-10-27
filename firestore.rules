@@ -1,0 +1,14 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Catálogo, mantas, sobras e regras: qualquer pessoa vê; só a equipe (com login) altera.
+    match /{col}/{id} {
+      allow read: if col in ['materiais', 'mantas', 'sobras', 'config'];
+      allow write: if request.auth != null;
+    }
+    // Pedidos têm nome de cliente: só a equipe vê.
+    match /movimentos/{id} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}

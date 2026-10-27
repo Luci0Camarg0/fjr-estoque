@@ -1,0 +1,1130 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Mantas FJR Solutions</title>
+<meta name="description" content="Catálogo e estoque de mantas da FJR Solutions: rolos, cortes de tapetes e sobras.">
+<link rel="icon" href="img/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: vitrine escura como o catálogo da FJR — logo central, grade de rolos com nome na cor da manta; páginas de item com coluna principal + coluna lateral */
+:root{
+  color-scheme:dark;
+  --bg:#050608; --surface:#101318; --surface-2:#161a21; --hover:#1b2029; --ink:#F1F3F7; --muted:#99A1B1; --line:#252b36;
+  --accent:#F2552C; --accent-ink:#FF7C57; --accent-soft:rgba(242,85,44,.15); --on-accent:#FFFFFF;
+  --ok:#5CCB93; --ok-bg:rgba(92,203,147,.13); --warn:#E9B04F; --warn-bg:rgba(233,176,79,.13); --bad:#F27A7A; --bad-bg:rgba(242,122,122,.13);
+  --piece:#22385F; --piece-line:#8FB0EA; --waste:#465165;
+  --glow-blue:rgba(32,70,220,.30); --glow-red:rgba(225,45,30,.26);
+  --f-display:"Saira Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;min-height:100vh;color:var(--ink);font:14.5px/1.5 var(--f-body);-webkit-font-smoothing:antialiased;
+  background:radial-gradient(55% 45% at 0% 0%,var(--glow-blue),transparent 70%),radial-gradient(45% 45% at 100% 0%,var(--glow-red),transparent 70%),radial-gradient(45% 45% at 0% 100%,var(--glow-red),transparent 70%),radial-gradient(55% 45% at 100% 100%,var(--glow-blue),transparent 70%),var(--bg);background-attachment:fixed}
+[hidden]{display:none!important}
+h1,h2,h3{margin:0;line-height:1.15;text-wrap:balance}
+h1{font-family:var(--f-display);font-weight:700;font-size:1.8rem;letter-spacing:.02em;text-transform:uppercase}
+h2{font-size:1rem;font-weight:600}
+p{margin:0}
+a{color:inherit}
+img{max-width:100%}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.small{font-size:.84rem}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* topo */
+.top{position:sticky;top:0;z-index:20;background:rgba(5,6,8,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
+.top .wrap{display:flex;align-items:center;gap:22px;height:60px}
+.top .logo{height:30px;display:block}
+.navs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0}
+.navs::-webkit-scrollbar{display:none}
+.nav{padding:8px 12px;border-radius:8px;text-decoration:none;color:var(--muted);font-weight:500;white-space:nowrap}
+.nav:hover{color:var(--ink);background:var(--hover)}
+.nav[aria-current="page"]{color:var(--ink);background:var(--surface-2);box-shadow:inset 0 -2px 0 var(--accent)}
+.who{display:flex;align-items:center;gap:8px;white-space:nowrap;font-size:.84rem;color:var(--muted)}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--muted);display:inline-block}
+.dot.on{background:var(--ok)}.dot.local{background:var(--warn)}
+#savebar{position:fixed;top:0;left:0;right:0;z-index:30;background:#0b0d12;border-bottom:1px solid var(--accent);padding-top:env(safe-area-inset-top,0px)}
+.sb-in{height:60px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.sb-in span{font-weight:500;display:flex;align-items:center;gap:8px}
+.sb-in span::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--warn)}
+.sb-in div{display:flex;gap:8px}
+main{padding-block:24px 90px}
+.page{display:flex;flex-direction:column;gap:16px}
+.page.narrow{max-width:860px;margin:0 auto}
+.notice{background:var(--warn-bg);color:var(--warn);border:1px solid rgba(233,176,79,.25);border-radius:10px;padding:9px 12px;font-size:.86rem}
+
+/* vitrine */
+.hero{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding-block:18px 6px}
+.hero img{height:86px;width:auto}
+.hero p{color:var(--muted)}
+.hero .sum{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.toolbar .search{flex:1;min-width:200px;max-width:340px}
+.toolbar .acts{margin-left:auto;display:flex;gap:8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:18px 16px}
+.pcard{display:flex;flex-direction:column;gap:8px;text-decoration:none;border-radius:14px;padding:8px 8px 12px;border:1px solid transparent;transition:border-color .15s,background .15s,transform .15s}
+.pcard:hover{background:var(--surface);border-color:var(--line);transform:translateY(-2px)}
+.pcard .pic{aspect-ratio:4/3;border-radius:10px;overflow:hidden;background:#000;display:flex;align-items:center;justify-content:center}
+.pcard .pic img{width:100%;height:100%;object-fit:cover;display:block}
+.pcard .pic svg{width:78%;height:auto}
+.pname{font-family:var(--f-display);font-weight:700;font-size:1.12rem;letter-spacing:.03em;text-transform:uppercase;text-align:center;color:var(--c);line-height:1.1}
+.pstock{display:flex;justify-content:center;align-items:center;gap:6px;font-size:.8rem;color:var(--muted);text-align:center;flex-wrap:wrap}
+.pstock .dot{flex:none}
+
+/* cabeçalho de página */
+.ph{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.ph h1{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ph .acts{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.back{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:8px;text-decoration:none;border:1px solid var(--line);background:var(--surface)}
+.back:hover{border-color:var(--muted)}
+.back svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.crumb{font-size:.86rem;color:var(--muted);width:100%;padding-left:46px;margin-top:-6px}
+
+/* cartões */
+.layout{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:16px;align-items:start}
+.col{display:flex;flex-direction:column;gap:16px;min-width:0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;min-width:0}
+.ch{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px 0;flex-wrap:wrap}
+.cb{padding:12px 16px 16px;display:flex;flex-direction:column;gap:12px}
+.cb.flush{padding:10px 0 0}
+.ch a,.link{color:var(--accent-ink);font-weight:500;font-size:.88rem;text-decoration:none;background:none;border:0;padding:0;cursor:pointer}
+.ch a:hover,.link:hover{text-decoration:underline}
+.photo{border-radius:10px;overflow:hidden;background:#000;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center}
+.photo img{width:100%;height:100%;object-fit:cover;display:block}
+.photo svg{width:60%;height:auto}
+
+/* botões e campos */
+.btn{appearance:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);padding:8px 14px;border-radius:8px;cursor:pointer;font-weight:500;font-size:.9rem;line-height:1.2;white-space:nowrap;text-decoration:none}
+.btn:hover{border-color:var(--muted)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn-primary:hover{border-color:var(--accent-ink);background:var(--accent-ink)}
+.btn-danger{background:var(--bad);border-color:var(--bad);color:#160606}
+.btn-ghost-danger{color:var(--bad)}
+.btn-block{width:100%}
+.btn-sm{padding:5px 10px;font-size:.84rem}
+.field{display:flex;flex-direction:column;gap:5px;min-width:0}
+.field>span{font-size:.84rem;font-weight:500}
+.field small{color:var(--muted);font-size:.8rem}
+.input{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-height:38px}
+.input:disabled{color:var(--muted)}
+textarea.input{min-height:76px;resize:vertical}
+.input:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
+input[type=color].input{padding:3px;height:38px;cursor:pointer}
+.dims{display:grid;grid-template-columns:1fr auto 1fr;align-items:end;gap:8px}
+.dims .x{padding-bottom:8px;color:var(--muted);font-family:var(--f-mono)}
+.dims .input{font-family:var(--f-mono);font-size:1.05rem}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{appearance:none;border:1px solid var(--line);background:var(--surface-2);border-radius:999px;padding:4px 11px;font-size:.82rem;cursor:pointer}
+.chip.mono{font-family:var(--f-mono);font-size:.78rem}
+.chip:hover{border-color:var(--accent)}
+.chip[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-ink)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+/* listas */
+.tabs{display:flex;gap:4px;padding:10px 12px 0;flex-wrap:wrap}
+.tab{appearance:none;border:0;background:none;padding:6px 10px;border-radius:8px;cursor:pointer;font-weight:500;color:var(--muted);font-size:.88rem}
+.tab:hover{background:var(--hover);color:var(--ink)}
+.tab[aria-pressed="true"]{background:var(--surface-2);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
+.filters{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line)}
+.filters .input{max-width:320px}
+.filters .dims{max-width:260px}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+th{font-size:.78rem;color:var(--muted);font-weight:500;text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);white-space:nowrap;background:var(--surface-2)}
+td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+tbody tr:last-child td{border-bottom:0}
+tr[data-href]{cursor:pointer}
+tr[data-href]:hover td{background:var(--hover)}
+td.n,th.n{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+td a.t{font-weight:600;text-decoration:none}
+td a.t:hover{text-decoration:underline}
+.nowrap{white-space:nowrap}
+.empty{padding:36px 20px;text-align:center;color:var(--muted);display:flex;flex-direction:column;gap:10px;align-items:center}
+.empty b{color:var(--ink);font-size:1rem}
+
+/* peças pequenas */
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:.76rem;font-weight:500;padding:2px 9px;border-radius:999px;white-space:nowrap;background:var(--surface-2);color:var(--muted);box-shadow:inset 0 0 0 1px var(--line);font-family:var(--f-body);letter-spacing:0;text-transform:none}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.85}
+.pill.ok{background:var(--ok-bg);color:var(--ok);box-shadow:none}
+.pill.hot{background:var(--accent-soft);color:var(--accent-ink);box-shadow:none}
+.pill.warn{background:var(--warn-bg);color:var(--warn);box-shadow:none}
+.pill.bad{background:var(--bad-bg);color:var(--bad);box-shadow:none}
+.thumb{width:44px;height:33px;border-radius:6px;overflow:hidden;background:#000;display:inline-flex;align-items:center;justify-content:center;flex:none}
+.thumb img{width:100%;height:100%;object-fit:cover}
+.thumb svg{width:90%}
+.prod{display:flex;align-items:center;gap:12px;min-width:0}
+.prod div{min-width:0}
+.prod small{display:block;color:var(--muted);font-size:.8rem}
+.cname{font-family:var(--f-display);font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--c)}
+.bar{display:block;height:8px;border-radius:4px;background:var(--surface-2);overflow:hidden;position:relative;box-shadow:inset 0 0 0 1px var(--line);min-width:80px}
+.bar i{position:absolute;inset:0 auto 0 0;background:var(--muted);border-radius:4px}
+.mini{width:52px;height:34px;display:inline-flex;align-items:center;justify-content:center;background:var(--surface-2);border-radius:6px;flex:none}
+.mini rect,.bigpic rect{fill:var(--piece);stroke:var(--piece-line);stroke-width:1.5;stroke-dasharray:4 2}
+.bigpic{background:var(--surface-2);border-radius:8px;display:flex;align-items:center;justify-content:center;padding:14px}
+.kv{display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none}
+.kv li{display:flex;justify-content:space-between;gap:12px;font-size:.9rem}
+.kv li span:first-child{color:var(--muted)}
+.kv li b{font-family:var(--f-mono);font-weight:500;text-align:right}
+.divider{border-top:1px solid var(--line);margin:0 -16px}
+.msg{padding:12px;border-radius:8px;font-size:.9rem;background:var(--surface-2);color:var(--muted)}
+.msg.err{background:var(--bad-bg);color:var(--bad)}
+.msg b{color:var(--ink)}
+.msg.err b{color:var(--bad)}
+
+/* plano de corte */
+.plan-wrap{overflow-x:auto;background:var(--surface-2);border-radius:8px;padding:10px}
+.plan{display:block;max-width:100%;height:auto;margin:0 auto}
+.plan .rug{fill:var(--accent)}
+.plan .keep{fill:var(--piece);stroke:var(--piece-line);stroke-width:1.5;stroke-dasharray:5 3}
+.plan .ctx{fill:var(--bg);stroke:var(--line)}
+.plan .used{fill:var(--waste)}
+.plan .hb{fill:var(--bg)}
+.plan .hl{stroke:var(--waste);stroke-width:3}
+.plan .cut{stroke:var(--bg);stroke-width:1.5}
+.plan text{fill:var(--ink);font:500 12px var(--f-mono)}
+.plan text.on{fill:var(--on-accent)}
+.plan text.dim{fill:var(--muted);font-size:11px}
+.plan .dl,.plan .tick{stroke:var(--muted);stroke-width:1}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}
+.legend i{display:inline-block;width:14px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.l-rug{background:var(--accent)}
+.l-keep{background:var(--piece);border:1px dashed var(--piece-line)}
+.l-lose{background:repeating-linear-gradient(45deg,var(--waste) 0 2px,var(--bg) 2px 5px)}
+.l-used{background:var(--waste)}
+.srcs{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.src{appearance:none;display:flex;gap:12px;align-items:center;padding:10px 12px;border:0;border-top:1px solid var(--line);background:var(--surface);text-align:left;cursor:pointer;width:100%}
+.src:first-child{border-top:0}
+.src:hover{background:var(--hover)}
+.src[aria-checked="true"]{background:var(--accent-soft)}
+.src .radio{width:16px;height:16px;border-radius:50%;border:2px solid var(--line);flex:none;background:var(--bg)}
+.src[aria-checked="true"] .radio{border-color:var(--accent);background:radial-gradient(var(--accent) 0 3px,var(--bg) 4px)}
+.src .t{flex:1;min-width:0}
+.src .t b{font-weight:600}
+.src .t small{display:block;color:var(--muted);font-size:.8rem}
+.src .r{font-family:var(--f-mono);font-size:.84rem;white-space:nowrap;text-align:right}
+
+/* modal e aviso */
+dialog{border:1px solid var(--line);border-radius:12px;padding:0;background:var(--surface);color:var(--ink);width:min(460px,calc(100vw - 32px));max-height:calc(100vh - 48px);box-shadow:0 20px 60px rgba(0,0,0,.6)}
+dialog::backdrop{background:rgba(0,0,0,.65)}
+dialog form{display:flex;flex-direction:column;max-height:calc(100vh - 50px)}
+dialog header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line)}
+dialog header h3{font-size:1rem}
+dialog .x{appearance:none;border:0;background:none;font-size:1.4rem;line-height:1;cursor:pointer;color:var(--muted);padding:2px 6px}
+.dlg-body{padding:16px;overflow:auto;display:flex;flex-direction:column;gap:12px}
+dialog footer{display:flex;justify-content:flex-end;gap:8px;padding:12px 16px;border-top:1px solid var(--line);flex-wrap:wrap}
+.form-err:empty{display:none}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);opacity:0;pointer-events:none;background:#F1F3F7;color:#0b0d12;padding:10px 16px;border-radius:8px;font-size:.9rem;max-width:calc(100vw - 32px);transition:opacity .2s,transform .2s;z-index:50}
+#toast.show{opacity:1;transform:translateX(-50%)}
+#toast.bad{background:var(--bad);color:#160606}
+.loading{padding:80px 0;text-align:center;color:var(--muted)}
+
+@media (max-width:860px){
+  .layout{grid-template-columns:minmax(0,1fr)}
+  .top .wrap{gap:12px}
+  .who .em{display:none}
+}
+@media (max-width:560px){
+  .top .wrap{flex-wrap:wrap;height:auto;padding-block:8px;row-gap:4px}
+  .navs{order:3;flex-basis:100%}
+  .who{margin-left:auto}
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 10px}
+  .pname{font-size:1rem}
+  .hero img{height:60px}
+  .grid2{grid-template-columns:minmax(0,1fr)}
+  .hide-sm{display:none}
+  .ph .acts{margin-left:0;width:100%}
+  .crumb{padding-left:0;margin-top:0}
+  .toolbar .acts{margin-left:0}
+}
+@media (prefers-reduced-motion:reduce){#toast,.pcard{transition:none}.pcard:hover{transform:none}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a href="#catalogo" aria-label="Catálogo"><img class="logo" src="img/logo.png" alt="FJR Solutions"></a>
+  <nav class="navs" aria-label="Menu">
+    <a class="nav" href="#catalogo" data-nav="catalogo">Catálogo</a>
+    <a class="nav" href="#pedidos" data-nav="pedidos" id="navPedidos">Pedidos</a>
+    <a class="nav" href="#sobras" data-nav="sobras">Sobras</a>
+    <a class="nav" href="#regras" data-nav="regras">Regras de corte</a>
+  </nav>
+  <div class="who" id="who"><i class="dot"></i>Conectando…</div>
+</div></header>
+<div id="savebar" hidden><div class="wrap sb-in"><span>Alterações não salvas</span><div><button class="btn" data-act="descartar-edicao">Descartar</button><button class="btn btn-primary" data-act="salvar-edicao">Salvar</button></div></div></div>
+<main class="wrap" id="app"><div class="loading">Carregando…</div></main>
+<dialog id="dlg"></dialog>
+<div id="toast" role="status" aria-live="polite"></div>
+<input type="file" id="fotoFile" accept="image/*" hidden>
+
+<script src="config.js"></script>
+<script>
+(() => {
+const EPS = 0.001;
+const DEF = { sobraMin: 0.30, larguraPadrao: 1.20, comprimentoPadrao: 12 };
+const COLS = ['materiais', 'mantas', 'sobras', 'config'];
+const CATALOGO = [
+  ['grafite', 'Manta Grafite', '#9A9DA3'], ['vermelha', 'Manta Vermelha', '#F0362B'], ['azul-royal', 'Manta Azul Royal', '#3B6CFF'],
+  ['verde', 'Manta Verde', '#1FA866'], ['laranja', 'Manta Laranja', '#FF8A22'], ['bordo', 'Manta Bordô', '#E0406E'],
+  ['pink', 'Manta Pink', '#FF45B0'], ['rosa-bebe', 'Manta Rosa Bebê', '#F7A3CF'], ['roxo', 'Manta Roxo', '#A24BFF'],
+  ['azul-marinho', 'Manta Azul Marinho', '#4E6FD8'], ['azul-maritimo', 'Manta Azul Marítimo', '#22A6F5'], ['verde-floresta', 'Manta Verde Floresta', '#22A06F'],
+  ['verde-musgo', 'Manta Verde Musgo', '#8EE02E'], ['verde-piscina', 'Manta Verde Piscina', '#2CD3E0'], ['preto', 'Manta Preto', '#E6E8EC'],
+  ['cinza', 'Manta Cinza', '#A9ACB1'], ['marrom', 'Manta Marrom', '#C47A45'], ['bege', 'Manta Bege', '#E3CDA4'],
+];
+const S = {
+  materiais: [], mantas: [], sobras: [], movimentos: [], config: {},
+  loaded: new Set(), mode: 'loading', authUser: null, route: { page: 'catalogo' }, busy: false, dirty: null, pending: false, seeding: false,
+  ui: {
+    cat: { q: '', f: 'todos' }, produto: { tab: 'ativas' },
+    np: { mat: '', a: '', b: '', cliente: '', pedido: '', sel: null },
+    pedidos: { tab: 'todos', q: '' }, sobras: { tab: 'disponivel', a: '', b: '' },
+  },
+};
+let store = null, unsubMov = null;
+const canWrite = () => S.mode === 'local' || (S.mode === 'firebase' && !!S.authUser);
+const canSeePedidos = () => S.mode !== 'firebase' || !!S.authUser;
+
+/* ---------- utilidades ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const r3 = n => Math.round(n * 1000) / 1000;
+const num = v => { const s = String(v ?? '').trim().replace(/\s/g, '').replace(',', '.'); return s === '' ? NaN : Number(s); };
+const f2 = n => (Math.round(n * 100) / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const fm = n => f2(n) + ' m';
+const fm2 = n => f2(n) + ' m²';
+const dimTxt = (w, l) => { const a = Math.max(w, l), b = Math.min(w, l); return `${f2(a)} × ${f2(b)} m`; };
+const sum = (arr, f) => arr.reduce((t, x) => t + f(x), 0);
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const cfg = () => ({ ...DEF, ...S.config });
+const fDate = iso => iso ? new Date(iso).toLocaleDateString('pt-BR') : '—';
+const fDateTime = iso => iso ? new Date(iso).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '—';
+const age = iso => { const d = Math.floor((Date.now() - new Date(iso).getTime()) / 86400000); return d <= 0 ? 'hoje' : d === 1 ? 'há 1 dia' : `há ${d} dias`; };
+const matById = id => S.materiais.find(m => m.id === id);
+const matName = id => matById(id)?.nome || 'Produto removido';
+const restante = m => r3(m.comprimento - (m.usado || 0));
+const stManta = m => m.esgotada ? 'esgotada' : (m.aberta || (m.usado || 0) > EPS) ? 'aberta' : 'fechada';
+const area = s => s.largura * s.comprimento;
+const ST = { fechada: ['Fechada', ''], aberta: ['Aberta', 'hot'], esgotada: ['Esgotada', ''], disponivel: ['Disponível', 'ok'], usada: ['Usada', ''], vendida: ['Vendida', ''], descartada: ['Descartada', 'bad'] };
+const pill = st => `<span class="pill ${ST[st]?.[1] || ''}">${ST[st]?.[0] || st}</span>`;
+const TIPO = { corte: 'Corte', venda: 'Venda de sobra', descarte: 'Descarte de sobra', encerramento: 'Encerramento de manta', ajuste: 'Ajuste de metragem' };
+const movPill = v => v.desfeito ? `<span class="pill bad">${isPedido(v) ? 'Cancelado' : 'Desfeito'}</span>` : v.tipo === 'corte' ? '<span class="pill ok">Cortado</span>' : v.tipo === 'venda' ? '<span class="pill ok">Vendido</span>' : `<span class="pill">${TIPO[v.tipo]}</span>`;
+const maxCode = (prefix, list) => list.reduce((mx, d) => { const m = String(d.codigo || '').match(new RegExp('^' + prefix + '-(\\d+)$')); return m ? Math.max(mx, +m[1]) : mx; }, 0);
+const code = (prefix, n, pad) => prefix + '-' + String(n).padStart(pad, '0');
+const usable = (w, l) => w > EPS && l > EPS && Math.min(w, l) >= cfg().sobraMin - EPS;
+const ordem = m => m.ordem ?? 999;
+const matsSorted = () => [...S.materiais].sort((a, b) => ordem(a) - ordem(b) || a.nome.localeCompare(b.nome, 'pt-BR'));
+const ready = () => COLS.every(c => S.loaded.has(c)) && S.loaded.has('movimentos');
+const isPedido = v => v.tipo === 'corte' || v.tipo === 'venda';
+const byDateDesc = (p, q) => String(q.data || q.criado).localeCompare(String(p.data || p.criado));
+const backIcon = '<svg viewBox="0 0 20 20"><path d="M12 4 6 10l6 6"/></svg>';
+const dis = () => canWrite() ? '' : ' disabled';
+function hexRgb(h) { const m = /^#?([0-9a-f]{6})$/i.exec(h || ''); if (!m) return [150, 150, 150]; const n = parseInt(m[1], 16); return [n >> 16, (n >> 8) & 255, n & 255]; }
+const rgb = a => `rgb(${a.map(v => Math.round(Math.max(0, Math.min(255, v)))).join(',')})`;
+const shade = (h, f) => rgb(hexRgb(h).map(v => v * f));
+function labelColor(h) { const [r, g, b] = hexRgb(h); const L = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255; return L < 0.35 ? rgb([r, g, b].map(v => v + (255 - v) * (0.35 - L) * 1.6)) : rgb([r, g, b]); }
+function rollIcon(cor) {
+  const c = cor || '#8892a6';
+  return `<svg viewBox="0 0 160 110" aria-hidden="true"><path d="M40 86 H148 L156 104 H30 Z" style="fill:${shade(c, .72)}"/><rect x="40" y="22" width="96" height="64" rx="32" style="fill:${shade(c, 1)}"/><ellipse cx="40" cy="54" rx="20" ry="32" style="fill:${shade(c, .62)}"/><ellipse cx="40" cy="54" rx="13" ry="21" style="fill:${shade(c, .8)}"/><circle cx="40" cy="54" r="6" fill="#d9c3a0"/></svg>`;
+}
+const foto = (m, cls = '') => m?.foto ? `<img src="${esc(m.foto)}" alt="${esc(m.nome)}" loading="lazy"${cls ? ` class="${cls}"` : ''}>` : rollIcon(m?.cor);
+const thumb = id => `<span class="thumb">${foto(matById(id))}</span>`;
+const cname = id => `<span class="cname" style="--c:${labelColor(matById(id)?.cor)}">${esc(matName(id))}</span>`;
+
+function toast(msg, kind) {
+  const t = $('#toast'); t.textContent = msg; t.className = 'show' + (kind ? ' ' + kind : '');
+  clearTimeout(toast.t); toast.t = setTimeout(() => { t.className = kind || ''; }, 3800);
+}
+
+/* ---------- armazenamento ---------- */
+async function firebaseStore(conf) {
+  const V = '10.12.2', base = `https://www.gstatic.com/firebasejs/${V}/`;
+  const [app, fs, au] = await Promise.all([import(base + 'firebase-app.js'), import(base + 'firebase-firestore.js'), import(base + 'firebase-auth.js')]);
+  const a = app.initializeApp(conf);
+  const db = fs.initializeFirestore(a, { ignoreUndefinedProperties: true });
+  const auth = au.getAuth(a);
+  return {
+    auth, au,
+    sub: (col, cb, err) => fs.onSnapshot(fs.collection(db, col), s => cb(s.docs.map(d => ({ id: d.id, ...d.data() }))), err),
+    set: (col, id, d) => fs.setDoc(fs.doc(db, col, id), d),
+    update: (col, id, d) => fs.updateDoc(fs.doc(db, col, id), d),
+    del: (col, id) => fs.deleteDoc(fs.doc(db, col, id)),
+  };
+}
+function localStore() {
+  const KEY = 'fjr-estoque-site-v1';
+  let data = {};
+  try { data = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { data = {}; }
+  const subs = {};
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) { toast('O navegador não deixou salvar (espaço cheio?).', 'bad'); } };
+  const emit = col => { const list = Object.entries(data[col] || {}).map(([id, d]) => ({ id, ...d })); (subs[col] || []).forEach(cb => cb(list)); };
+  const clone = d => JSON.parse(JSON.stringify(d));
+  return {
+    sub(col, cb) { (subs[col] ||= []).push(cb); queueMicrotask(() => emit(col)); return () => { subs[col] = (subs[col] || []).filter(f => f !== cb); }; },
+    async set(col, id, d) { (data[col] ||= {})[id] = clone(d); save(); emit(col); },
+    async update(col, id, d) { if (!data[col]?.[id]) throw { code: 'not-found', message: 'registro não encontrado' }; data[col][id] = { ...data[col][id], ...clone(d) }; save(); emit(col); },
+    async del(col, id) { if (data[col]) delete data[col][id]; save(); emit(col); },
+  };
+}
+async function write(fn) {
+  if (!canWrite()) { toast('Entre com sua conta para editar.', 'bad'); return false; }
+  if (S.busy) return false;
+  S.busy = true;
+  try { await fn(); return true; }
+  catch (e) {
+    const msg = e?.code === 'permission-denied' ? 'Sem permissão para salvar. Entre com uma conta da equipe.'
+      : e?.code === 'resource-exhausted' ? 'Limite do banco de dados atingido. Tente mais tarde.'
+      : 'Não foi possível salvar: ' + (e?.message || e);
+    toast(msg, 'bad'); return false;
+  } finally { S.busy = false; }
+}
+
+/* ---------- geometria do corte ----------
+   "atravessado" = largura da manta (1,20 m); "ao longo" = comprimento do rolo.
+   Peça: {a0, l0, w (atravessado), l (ao longo)} */
+function splitPieces(pieces) {
+  const keep = [], lose = [];
+  pieces.filter(p => p.w > EPS && p.l > EPS).forEach(p => (usable(p.w, p.l) ? keep : lose).push({ ...p, w: r3(p.w), l: r3(p.l) }));
+  return { keep, lose, waste: r3(sum(lose, p => p.w * p.l)) };
+}
+const orientations = (a, b) => Math.abs(a - b) < EPS ? [[a, b]] : [[a, b], [b, a]];
+function fitRoll(m, a, b) {
+  const W = m.largura, R = restante(m), out = [];
+  for (const [x, y] of orientations(a, b)) {
+    if (x > W + EPS || y > R + EPS) continue;
+    out.push({ x, y, consumo: y, regionW: W, regionL: y, ...splitPieces([{ a0: x, l0: 0, w: W - x, l: y }]) });
+  }
+  return out.sort((p, q) => p.waste - q.waste || p.consumo - q.consumo)[0] || null;
+}
+function fitSobra(s, a, b) {
+  const w = s.largura, l = s.comprimento, out = [];
+  for (const [x, y] of orientations(a, b)) {
+    if (x > w + EPS || y > l + EPS) continue;
+    out.push({ x, y, consumo: 0, regionW: w, regionL: l, ...splitPieces([{ a0: x, l0: 0, w: w - x, l: y }, { a0: 0, l0: y, w, l: l - y }]) });
+    out.push({ x, y, consumo: 0, regionW: w, regionL: l, ...splitPieces([{ a0: x, l0: 0, w: w - x, l }, { a0: 0, l0: y, w: x, l: l - y }]) });
+  }
+  const big = o => Math.max(0, ...o.keep.map(p => p.w * p.l));
+  return out.sort((p, q) => p.waste - q.waste || big(q) - big(p) || p.keep.length - q.keep.length)[0] || null;
+}
+function recommend(mat, a, b) {
+  const sob = S.sobras.filter(s => s.status === 'disponivel' && s.materialId === mat)
+    .map(s => ({ tipo: 'sobra', src: s, o: fitSobra(s, a, b) })).filter(c => c.o).sort((p, q) => area(p.src) - area(q.src));
+  const ab = S.mantas.filter(m => m.materialId === mat && stManta(m) === 'aberta')
+    .map(m => ({ tipo: 'manta', src: m, o: fitRoll(m, a, b) })).filter(c => c.o).sort((p, q) => restante(p.src) - restante(q.src));
+  const fe = S.mantas.filter(m => m.materialId === mat && stManta(m) === 'fechada')
+    .sort((p, q) => String(p.entrada).localeCompare(String(q.entrada)) || String(p.codigo).localeCompare(String(q.codigo)))
+    .map(m => ({ tipo: 'manta', fechada: true, src: m, o: fitRoll(m, a, b) })).filter(c => c.o);
+  const list = [...sob, ...ab];
+  if (fe.length) list.push({ ...fe[0], outras: fe.length - 1 });
+  list.forEach(c => { c.key = c.tipo + ':' + c.src.id; });
+  return list;
+}
+
+/* ---------- desenhos ---------- */
+let svgN = 0;
+const hatch = id => `<defs><pattern id="${id}" patternUnits="userSpaceOnUse" width="7" height="7" patternTransform="rotate(45)"><rect class="hb" width="7" height="7"/><line class="hl" x1="0" y1="0" x2="0" y2="7"/></pattern></defs>`;
+function drawPlan({ W, L, rug, rugLabel, keep = [], lose = [], maxW = 560, maxH = 170 }) {
+  const id = 'h' + (++svgN), k = Math.min(maxW / L, maxH / W);
+  const pl = 34, pt = 8, pb = 28, pr = 8, vw = pl + L * k + pr, vh = pt + W * k + pb;
+  const R = (p, cls) => `<rect class="${cls}" x="${(pl + p.l0 * k).toFixed(1)}" y="${(pt + p.a0 * k).toFixed(1)}" width="${(p.l * k).toFixed(1)}" height="${(p.w * k).toFixed(1)}"${cls === 'lose' ? ` fill="url(#${id})"` : ''}/>`;
+  const T = (p, txt, cls) => { const w = p.l * k, h = p.w * k; if (!(w > txt.length * 7.3 + 10 && h > 18)) return ''; return `<text${cls ? ` class="${cls}"` : ''} x="${(pl + (p.l0 + p.l / 2) * k).toFixed(1)}" y="${(pt + (p.a0 + p.w / 2) * k + 4).toFixed(1)}" text-anchor="middle">${esc(txt)}</text>`; };
+  let s = `<svg class="plan" viewBox="0 0 ${vw.toFixed(1)} ${vh.toFixed(1)}" width="${vw.toFixed(0)}" role="img" aria-label="Plano de corte">${hatch(id)}`;
+  s += R({ a0: 0, l0: 0, w: W, l: L }, 'ctx');
+  keep.forEach(p => { s += R(p, 'keep') + T(p, 'Sobra ' + dimTxt(p.w, p.l)); });
+  lose.forEach(p => { s += R(p, 'lose') + T(p, 'perda'); });
+  const rp = { a0: 0, l0: 0, w: rug.x, l: rug.y };
+  s += R(rp, 'rug') + (T(rp, rugLabel, 'on') || T(rp, 'Tapete', 'on'));
+  const yb = pt + W * k + 14, xe = (pl + L * k).toFixed(1);
+  s += `<line class="dl" x1="${pl}" y1="${yb - 6}" x2="${pl}" y2="${yb + 2}"/><line class="dl" x1="${xe}" y1="${yb - 6}" x2="${xe}" y2="${yb + 2}"/><line class="dl" x1="${pl}" y1="${yb - 2}" x2="${xe}" y2="${yb - 2}"/>`;
+  s += `<text class="dim" x="${(pl + L * k / 2).toFixed(1)}" y="${yb + 11}" text-anchor="middle">${fm(L)}</text>`;
+  s += `<text class="dim" transform="translate(${pl - 10} ${(pt + W * k / 2).toFixed(1)}) rotate(-90)" text-anchor="middle">${fm(W)}</text>`;
+  return s + '</svg>';
+}
+const rollHistory = m => S.movimentos.filter(v => !v.desfeito && v.fonte?.tipo === 'manta' && v.fonte.id === m.id).sort((p, q) => String(p.data).localeCompare(String(q.data)));
+function drawRoll(m) {
+  const id = 'h' + (++svgN), W = m.largura, L = m.comprimento, k = Math.min(620 / L, 100 / W);
+  const pl = 6, pt = 6, vw = pl * 2 + L * k, vh = pt + W * k + 30;
+  const X = v => (pl + v * k).toFixed(1), Y = v => (pt + v * k).toFixed(1);
+  let s = `<svg class="plan" viewBox="0 0 ${vw.toFixed(1)} ${vh.toFixed(1)}" width="${vw.toFixed(0)}" role="img" aria-label="Rolo ${esc(m.codigo)}">${hatch(id)}`;
+  s += `<rect class="ctx" x="${X(0)}" y="${Y(0)}" width="${(L * k).toFixed(1)}" height="${(W * k).toFixed(1)}"/>`;
+  let pos = 0;
+  for (const v of rollHistory(m)) {
+    const c = Math.max(0, v.consumo || 0);
+    if (c <= EPS) continue;
+    if (v.tipo === 'corte') {
+      const x = Math.min(W, v.atravessado || W);
+      s += `<rect class="rug" x="${X(pos)}" y="${Y(0)}" width="${(c * k).toFixed(1)}" height="${(x * k).toFixed(1)}"/>`;
+      if (W - x > EPS) { const kept = (v.sobrasGeradas || []).length > 0; s += `<rect class="${kept ? 'keep' : 'lose'}" x="${X(pos)}" y="${Y(x)}" width="${(c * k).toFixed(1)}" height="${((W - x) * k).toFixed(1)}"${kept ? '' : ` fill="url(#${id})"`}/>`; }
+      s += `<line class="cut" x1="${X(pos + c)}" y1="${Y(0)}" x2="${X(pos + c)}" y2="${Y(W)}"/>`;
+    } else s += `<rect class="used" x="${X(pos)}" y="${Y(0)}" width="${(c * k).toFixed(1)}" height="${(W * k).toFixed(1)}"/>`;
+    pos += c;
+  }
+  const used = Math.min(L, m.usado || 0);
+  if (used - pos > EPS) s += `<rect class="used" x="${X(pos)}" y="${Y(0)}" width="${((used - pos) * k).toFixed(1)}" height="${(W * k).toFixed(1)}"/>`;
+  const rest = L - used;
+  if (rest > EPS) { const txt = 'restam ' + fm(rest); if (rest * k > txt.length * 7.3) s += `<text class="dim" x="${X(used + rest / 2)}" y="${Y(W / 2 + 0.04)}" text-anchor="middle">${txt}</text>`; }
+  const yb = pt + W * k;
+  for (let i = 0; i <= Math.floor(L + EPS); i++) {
+    s += `<line class="tick" x1="${X(i)}" y1="${yb + 2}" x2="${X(i)}" y2="${yb + (i % 2 ? 6 : 9)}"/>`;
+    if (i % 2 === 0 || L <= 8) s += `<text class="dim" x="${X(i)}" y="${yb + 22}" text-anchor="${i === 0 ? 'start' : i >= L - EPS ? 'end' : 'middle'}">${i}</text>`;
+  }
+  return s + '</svg>';
+}
+function miniRect(s, boxW, boxH, scale) {
+  const a = Math.max(s.largura, s.comprimento), b = Math.min(s.largura, s.comprimento);
+  const k = Math.min(scale || Infinity, (boxW - 6) / a, (boxH - 6) / b);
+  const w = Math.max(3, a * k), h = Math.max(3, b * k);
+  return `<svg width="${boxW.toFixed(0)}" height="${boxH.toFixed(0)}" viewBox="0 0 ${boxW.toFixed(0)} ${boxH.toFixed(0)}" aria-hidden="true"><rect x="${((boxW - w) / 2).toFixed(1)}" y="${((boxH - h) / 2).toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" rx="1"/></svg>`;
+}
+const legend = used => `<div class="legend"><span><i class="l-rug"></i>tapete</span><span><i class="l-keep"></i>sobra guardada</span><span><i class="l-lose"></i>perda</span>${used ? '<span><i class="l-used"></i>ajuste / encerramento</span>' : ''}</div>`;
+
+/* ---------- modal ---------- */
+function modal({ title, body, submit, danger, onSubmit, open }) {
+  const d = $('#dlg');
+  if (d.open) d.close();
+  d.innerHTML = `<form id="dlgForm" novalidate><header><h3>${title}</h3><button type="button" class="x" data-close aria-label="Fechar">×</button></header><div class="dlg-body">${body}<div class="msg err form-err" id="dlgErr"></div></div><footer><button type="button" class="btn" data-close>Cancelar</button><button type="submit" class="btn ${danger ? 'btn-danger' : 'btn-primary'}" id="dlgOk">${submit}</button></footer></form>`;
+  const form = $('#dlgForm');
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    $('#dlgErr').textContent = '';
+    $('#dlgOk').disabled = true;
+    const res = await onSubmit(new FormData(form), form);
+    $('#dlgOk').disabled = false;
+    if (typeof res === 'string') { $('#dlgErr').textContent = res; return; }
+    if (res !== false) d.close();
+  });
+  d.showModal();
+  open && open(form);
+}
+document.addEventListener('click', e => { if (e.target.closest('[data-close]')) $('#dlg').close(); });
+$('#dlg').addEventListener('click', e => { if (e.target === $('#dlg')) $('#dlg').close(); });
+const confirmDlg = (title, body, label, fn, danger = true) => modal({ title, body, submit: label, danger, onSubmit: async () => (await write(fn)) ? undefined : false });
+
+/* ---------- ações nos dados ---------- */
+const autor = () => S.authUser?.email || null;
+async function applyCut(c, info) {
+  const o = c.o, now = new Date().toISOString(), movId = uid(), novas = [];
+  let n = maxCode('S', S.sobras);
+  const mantaId = c.tipo === 'manta' ? c.src.id : c.src.mantaId;
+  for (const p of o.keep) novas.push({ id: uid(), codigo: code('S', ++n, 3), materialId: c.src.materialId, mantaId, largura: p.w, comprimento: p.l, status: 'disponivel', criado: now, origemMovId: movId });
+  const mov = {
+    codigo: code('C', maxCode('C', S.movimentos) + 1, 4), tipo: 'corte', data: now, materialId: c.src.materialId,
+    largura: info.a, comprimento: info.b, cliente: info.cliente || '', pedido: info.pedido || '',
+    fonte: { tipo: c.tipo, id: c.src.id, codigo: c.src.codigo }, consumo: c.tipo === 'manta' ? r3(o.y) : 0,
+    atravessado: r3(o.x), sobrasGeradas: novas.map(s => s.id), perda: o.waste, por: autor(),
+  };
+  if (c.tipo === 'manta') {
+    const m = S.mantas.find(x => x.id === c.src.id);
+    if (!m || restante(m) < o.y - EPS) throw new Error('a manta mudou enquanto você registrava. Confira e tente de novo.');
+    mov.abertaAntes = !!m.aberta;
+    const usado = r3((m.usado || 0) + o.y);
+    await store.update('mantas', m.id, { usado, aberta: true, esgotada: r3(m.comprimento - usado) <= EPS });
+  } else {
+    const s = S.sobras.find(x => x.id === c.src.id);
+    if (!s || s.status !== 'disponivel') throw new Error('essa sobra já foi usada por outra pessoa.');
+    await store.update('sobras', s.id, { status: 'usada', baixaMovId: movId, baixa: now });
+  }
+  for (const { id, ...d } of novas) await store.set('sobras', id, d);
+  await store.set('movimentos', movId, mov);
+  return { movId, mov, novas };
+}
+async function undoMov(v) {
+  const geradas = (v.sobrasGeradas || []).map(id => S.sobras.find(s => s.id === id)).filter(Boolean);
+  const presa = geradas.find(s => s.status !== 'disponivel');
+  if (presa) throw new Error(`a sobra ${presa.codigo} que saiu daqui já foi ${ST[presa.status][0].toLowerCase()}. Cancele aquele pedido primeiro.`);
+  if (v.fonte?.tipo === 'manta') {
+    const m = S.mantas.find(x => x.id === v.fonte.id);
+    if (m) {
+      const usado = Math.min(m.comprimento, Math.max(0, r3((m.usado || 0) - (v.consumo || 0))));
+      await store.update('mantas', m.id, { usado, esgotada: false, aberta: v.tipo === 'corte' ? (!!v.abertaAntes || usado > EPS) : (m.aberta || usado > EPS) });
+    }
+  } else if (v.fonte?.tipo === 'sobra') {
+    const s = S.sobras.find(x => x.id === v.fonte.id);
+    if (s) await store.update('sobras', s.id, { status: 'disponivel', baixa: null, baixaMovId: null, destino: null });
+  }
+  for (const s of geradas) await store.del('sobras', s.id);
+  await store.update('movimentos', v.id, { desfeito: true, desfeitoEm: new Date().toISOString() });
+}
+async function addMov(fields) {
+  const id = uid();
+  await store.set('movimentos', id, { codigo: code('C', maxCode('C', S.movimentos) + 1, 4), data: new Date().toISOString(), por: autor(), sobrasGeradas: [], consumo: 0, perda: 0, cliente: '', pedido: '', ...fields });
+  return id;
+}
+async function seedCatalogo() {
+  if (S.seeding || !canWrite() || S.config.catalogoCriado || S.materiais.length) return;
+  S.seeding = true;
+  try {
+    for (let i = 0; i < CATALOGO.length; i++) {
+      const [id, nome, cor] = CATALOGO[i];
+      await store.set('materiais', id, { nome, cor, foto: `img/${id}.jpg`, obs: '', ordem: i, criado: new Date().toISOString() });
+    }
+    await store.set('config', 'geral', { ...S.config, catalogoCriado: true });
+  } catch (e) { toast('Não foi possível criar o catálogo: ' + (e?.message || e), 'bad'); }
+  S.seeding = false;
+}
+function resizeImage(file, max = 640) {
+  return new Promise((res, rej) => {
+    const url = URL.createObjectURL(file), img = new Image();
+    img.onload = () => {
+      const k = Math.min(1, max / Math.max(img.width, img.height));
+      const c = document.createElement('canvas'); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+      const g = c.getContext('2d'); g.fillStyle = '#000'; g.fillRect(0, 0, c.width, c.height); g.drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url); res(c.toDataURL('image/jpeg', 0.82));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('imagem inválida')); };
+    img.src = url;
+  });
+}
+
+/* ---------- modais ---------- */
+function dlgLogin() {
+  modal({
+    title: 'Entrar', submit: 'Entrar',
+    body: `<p class="muted small">Só a equipe da FJR edita o estoque. Use o e-mail e a senha cadastrados no Firebase.</p>
+      <label class="field"><span>E-mail</span><input class="input" type="email" name="email" autocomplete="username"></label>
+      <label class="field"><span>Senha</span><input class="input" type="password" name="senha" autocomplete="current-password"></label>`,
+    open: f => f.email.focus(),
+    onSubmit: async fd => {
+      try { await store.au.signInWithEmailAndPassword(store.auth, String(fd.get('email')).trim(), String(fd.get('senha'))); toast('Você entrou. Agora pode editar.'); }
+      catch (e) { return /invalid|wrong|user-not-found/.test(e?.code || '') ? 'E-mail ou senha incorretos.' : e?.code === 'auth/too-many-requests' ? 'Muitas tentativas. Espere alguns minutos.' : 'Não foi possível entrar: ' + (e?.message || e); }
+    },
+  });
+}
+function dlgEntrada(mat) {
+  const c = cfg(), m = matById(mat); if (!m) return;
+  modal({
+    title: `Adicionar mantas · ${esc(m.nome)}`, submit: 'Adicionar',
+    body: `<p class="muted small">Cada manta recebe um código (M-001, M-002…). Escreva o código na etiqueta do rolo.</p>
+      <div class="grid2"><label class="field"><span>Quantidade</span><input class="input mono" name="qtd" inputmode="numeric" value="1"></label>
+      <label class="field"><span>Data de entrada</span><input class="input" type="date" name="data" value="${new Date().toISOString().slice(0, 10)}"></label></div>
+      <div class="dims"><label class="field"><span>Largura (m)</span><input class="input" name="w" inputmode="decimal" value="${f2(c.larguraPadrao)}"></label><span class="x">×</span><label class="field"><span>Comprimento (m)</span><input class="input" name="l" inputmode="decimal" value="${f2(c.comprimentoPadrao)}"></label></div>
+      <label class="field"><span>Lote / fornecedor <small>(opcional)</small></span><input class="input" name="lote" maxlength="80"></label>`,
+    onSubmit: async fd => {
+      const qtd = Math.round(num(fd.get('qtd'))), w = num(fd.get('w')), l = num(fd.get('l'));
+      if (!(qtd >= 1 && qtd <= 50)) return 'Informe uma quantidade entre 1 e 50.';
+      if (!(w > 0 && w <= 5)) return 'Largura inválida. Use metros, por exemplo 1,20.';
+      if (!(l > 0 && l <= 100)) return 'Comprimento inválido. Use metros, por exemplo 12.';
+      const data = fd.get('data') ? new Date(fd.get('data') + 'T12:00:00').toISOString() : new Date().toISOString();
+      let n = maxCode('M', S.mantas); const codes = [];
+      const ok = await write(async () => {
+        for (let i = 0; i < qtd; i++) {
+          const cd = code('M', ++n, 3); codes.push(cd);
+          await store.set('mantas', uid(), { codigo: cd, materialId: mat, largura: r3(w), comprimento: r3(l), usado: 0, aberta: false, esgotada: false, lote: String(fd.get('lote') || '').trim(), entrada: data });
+        }
+      });
+      if (!ok) return false;
+      toast(qtd === 1 ? `Manta ${codes[0]} adicionada.` : `${qtd} mantas adicionadas: ${codes[0]} a ${codes[codes.length - 1]}.`);
+    },
+  });
+}
+function dlgEncerrar(m) {
+  const R = restante(m), vira = usable(m.largura, R);
+  modal({
+    title: `Encerrar ${esc(m.codigo)}`, submit: 'Encerrar manta',
+    body: `<p>O que resta do rolo (${f2(m.largura)} × ${f2(R)} m) ${R <= EPS ? 'é zero.' : vira ? 'vira uma <b>sobra</b> e fica disponível para venda.' : `é menor que ${fm(cfg().sobraMin)} e conta como <b>perda</b>.`}</p><p class="muted small">A manta sai do estoque de rolos.</p>`,
+    onSubmit: async () => {
+      let cd = '';
+      const ok = await write(async () => {
+        const movId = uid(), now = new Date().toISOString(), ger = [];
+        if (vira) { const sid = uid(); cd = code('S', maxCode('S', S.sobras) + 1, 3); ger.push(sid); await store.set('sobras', sid, { codigo: cd, materialId: m.materialId, mantaId: m.id, largura: m.largura, comprimento: R, status: 'disponivel', criado: now, origemMovId: movId }); }
+        await store.update('mantas', m.id, { usado: m.comprimento, aberta: true, esgotada: true });
+        await store.set('movimentos', movId, { codigo: code('C', maxCode('C', S.movimentos) + 1, 4), tipo: 'encerramento', data: now, materialId: m.materialId, fonte: { tipo: 'manta', id: m.id, codigo: m.codigo }, consumo: R, sobrasGeradas: ger, perda: vira ? 0 : r3(R * m.largura), cliente: '', pedido: '', por: autor() });
+      });
+      if (!ok) return false;
+      toast(cd ? `${m.codigo} encerrada. O resto virou a sobra ${cd}.` : `${m.codigo} encerrada.`);
+    },
+  });
+}
+function dlgVender(s) {
+  modal({
+    title: `Vender sobra ${esc(s.codigo)}`, submit: 'Registrar venda',
+    body: `<p>Vende a peça inteira de <b class="mono">${dimTxt(s.largura, s.comprimento)}</b> sem novo corte.</p>
+      <label class="field"><span>Cliente</span><input class="input" name="cli" maxlength="120"></label>
+      <label class="field"><span>Observação</span><input class="input" name="ped" maxlength="160"></label>`,
+    onSubmit: async fd => {
+      let mid;
+      const ok = await write(async () => {
+        const cli = String(fd.get('cli') || '').trim();
+        mid = await addMov({ tipo: 'venda', materialId: s.materialId, largura: s.largura, comprimento: s.comprimento, cliente: cli, pedido: String(fd.get('ped') || '').trim(), fonte: { tipo: 'sobra', id: s.id, codigo: s.codigo } });
+        await store.update('sobras', s.id, { status: 'vendida', baixa: new Date().toISOString(), baixaMovId: mid, destino: { cliente: cli } });
+      });
+      if (!ok) return false;
+      toast(`Sobra ${s.codigo} vendida.`);
+      go('o-' + mid, true);
+    },
+  });
+}
+function dlgDescartar(s) {
+  modal({
+    title: `Descartar sobra ${esc(s.codigo)}`, submit: 'Descartar', danger: true,
+    body: `<p>A peça <b class="mono">${dimTxt(s.largura, s.comprimento)}</b> sai do estoque como perda.</p>
+      <label class="field"><span>Motivo</span><input class="input" name="mot" placeholder="Ex.: peça danificada" maxlength="120"></label>`,
+    onSubmit: async fd => {
+      const ok = await write(async () => {
+        const mid = await addMov({ tipo: 'descarte', materialId: s.materialId, largura: s.largura, comprimento: s.comprimento, perda: r3(area(s)), pedido: String(fd.get('mot') || '').trim(), fonte: { tipo: 'sobra', id: s.id, codigo: s.codigo } });
+        await store.update('sobras', s.id, { status: 'descartada', baixa: new Date().toISOString(), baixaMovId: mid });
+      });
+      if (!ok) return false;
+      toast(`Sobra ${s.codigo} descartada.`);
+    },
+  });
+}
+
+/* ---------- partes de página ---------- */
+const head = (title, { back, crumb, acts = '' } = {}) => `<div class="ph">${back ? `<a class="back" href="#${back}" aria-label="Voltar">${backIcon}</a>` : ''}<h1>${title}</h1><div class="acts">${acts}</div>${crumb ? `<div class="crumb">${crumb}</div>` : ''}</div>`;
+const card = (title, body, { link = '', flush = false } = {}) => `<section class="card">${title ? `<div class="ch"><h2>${title}</h2>${link}</div>` : ''}<div class="cb${flush ? ' flush' : ''}">${body}</div></section>`;
+const empty = (t, p, btn = '') => `<div class="empty"><b>${t}</b>${p ? `<p>${p}</p>` : ''}${btn}</div>`;
+const table = (cols, rows) => `<div class="tbl"><table><thead><tr>${cols.map(c => `<th${c.startsWith('>') ? ' class="n"' : c.startsWith('~') ? ' class="hide-sm"' : ''}>${c.replace(/^[>~]/, '')}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div>`;
+const tabsBar = (key, items, cur) => `<div class="tabs">${items.map(([k, l]) => `<button type="button" class="tab" data-tab="${key}" data-val="${k}" aria-pressed="${k === cur}">${l}</button>`).join('')}</div>`;
+const notice = () => S.mode === 'local' ? '<div class="notice">Modo demonstração: os dados ficam só neste navegador. Para a equipe toda ver o mesmo estoque, configure o banco de dados (veja o LEIAME).</div>'
+  : S.mode === 'firebase' && !S.authUser ? '<div class="notice">Você está vendo o estoque. Para editar, <button class="link" data-act="login">entre com sua conta</button>.</div>' : '';
+const loginBtn = () => S.mode === 'firebase' && !S.authUser ? '<button class="btn btn-primary" data-act="login">Entrar para editar</button>' : '';
+const bar = m => `<span class="bar" title="Usado ${fm(m.usado || 0)} de ${fm(m.comprimento)}"><i style="width:${Math.min(100, (m.usado || 0) / m.comprimento * 100).toFixed(1)}%"></i></span>`;
+function resumo(mat) {
+  const ms = S.mantas.filter(m => !mat || m.materialId === mat);
+  const ab = ms.filter(m => stManta(m) === 'aberta'), fe = ms.filter(m => stManta(m) === 'fechada');
+  const sb = S.sobras.filter(s => s.status === 'disponivel' && (!mat || s.materialId === mat));
+  const metros = sum(ab, restante) + sum(fe, m => m.comprimento);
+  const m2 = sum(ab, m => restante(m) * m.largura) + sum(fe, m => m.comprimento * m.largura) + sum(sb, area);
+  return { ab, fe, sb, mAb: sum(ab, restante), metros, m2 };
+}
+const mantaRow = m => `<tr data-href="m-${m.id}"><td class="nowrap"><a class="t mono" href="#m-${m.id}">${esc(m.codigo)}</a></td><td>${pill(stManta(m))}</td><td style="width:40%">${bar(m)}</td><td class="n">${fm(restante(m))}</td><td class="hide-sm muted nowrap">${fDate(m.entrada)}</td></tr>`;
+const sobraRow = (s, scale, showMat = true) => `<tr data-href="s-${s.id}"><td><div class="prod"><span class="mini">${miniRect(s, 52, 34, scale)}</span><div><a class="t mono" href="#s-${s.id}">${dimTxt(s.largura, s.comprimento)}</a><small class="mono">${esc(s.codigo)} · ${fm2(area(s))}</small></div></div></td>${showMat ? `<td class="hide-sm">${cname(s.materialId)}</td>` : ''}<td class="muted nowrap">${age(s.criado)}</td><td>${pill(s.status)}</td></tr>`;
+const sobraScale = list => Math.min(...list.map(s => Math.min(46 / Math.max(s.largura, s.comprimento), 28 / Math.min(s.largura, s.comprimento))), 999);
+const pedidoRow = v => `<tr data-href="o-${v.id}"><td class="nowrap"><a class="t mono" href="#o-${v.id}">${esc(v.codigo)}</a></td><td class="muted nowrap">${fDateTime(v.data)}</td><td>${esc(v.cliente || '—')}</td><td class="hide-sm">${cname(v.materialId)}</td><td class="mono nowrap">${v.largura ? `${f2(v.largura)} × ${f2(v.comprimento)}` : '—'}</td><td>${movPill(v)}</td></tr>`;
+function stockLine(id) {
+  const r = resumo(id), rolos = r.ab.length + r.fe.length;
+  if (rolos) return `<i class="dot on"></i>${rolos} rolo${rolos > 1 ? 's' : ''} · ${fm(r.metros)}${r.sb.length ? ` · ${r.sb.length} sobra${r.sb.length > 1 ? 's' : ''}` : ''}`;
+  if (r.sb.length) return `<i class="dot local"></i>Só sobras (${r.sb.length})`;
+  return '<i class="dot"></i>Sem estoque';
+}
+
+/* ---------- páginas ---------- */
+const P = {};
+
+P.catalogo = () => {
+  const r = resumo(), u = S.ui.cat;
+  return `<div class="page">${notice()}
+    <section class="hero"><img src="img/logo.png" alt="FJR Solutions"><p>Catálogo de mantas · rolos de ${f2(cfg().larguraPadrao)} × ${f2(cfg().comprimentoPadrao)} m</p>
+      <div class="sum"><span class="pill">${S.materiais.length} cores</span><span class="pill ok">${r.ab.length + r.fe.length} rolos em estoque</span><span class="pill hot">${r.sb.length} sobras para vender</span></div></section>
+    <div class="toolbar"><input class="input search" id="qCat" placeholder="Buscar cor" value="${esc(u.q)}" autocomplete="off">
+      <div class="chips">${[['todos', 'Todas'], ['estoque', 'Em estoque'], ['sobras', 'Com sobras'], ['sem', 'Sem estoque']].map(([k, l]) => `<button type="button" class="chip" data-tab="cat" data-key="f" data-val="${k}" aria-pressed="${u.f === k}">${l}</button>`).join('')}</div>
+      <div class="acts">${canWrite() ? '<a class="btn" href="#novo-produto">Adicionar cor</a><a class="btn btn-primary" href="#novo-pedido">Criar pedido</a>' : loginBtn()}</div></div>
+    <div id="list">${P.catalogoList()}</div></div>`;
+};
+P.catalogoList = () => {
+  const u = S.ui.cat, q = u.q.trim().toLowerCase();
+  if (!S.materiais.length) return S.seeding || (canWrite() && !S.config.catalogoCriado) ? '<div class="loading">Montando o catálogo…</div>' : empty('Nenhuma manta cadastrada', canWrite() ? '' : 'O catálogo ainda não foi configurado.', canWrite() ? '<a class="btn btn-primary" href="#novo-produto">Adicionar cor</a>' : '');
+  const list = matsSorted().filter(m => {
+    if (q && !(m.nome + ' ' + (m.obs || '')).toLowerCase().includes(q)) return false;
+    const r = resumo(m.id), rolos = r.ab.length + r.fe.length;
+    return u.f === 'todos' || (u.f === 'estoque' && rolos) || (u.f === 'sobras' && r.sb.length) || (u.f === 'sem' && !rolos && !r.sb.length);
+  });
+  if (!list.length) return empty('Nenhuma cor encontrada', 'Mude a busca ou o filtro.');
+  return `<div class="grid">${list.map(m => `<a class="pcard" href="#p-${m.id}" style="--c:${labelColor(m.cor)}"><div class="pic">${foto(m)}</div><div class="pname">${esc(m.nome)}</div><div class="pstock">${stockLine(m.id)}</div></a>`).join('')}</div>`;
+};
+
+const produtoForm = (m) => `
+  <label class="field"><span>Nome</span><input class="input" name="nome" maxlength="80" value="${esc(m?.nome || '')}" placeholder="Ex.: Manta Azul Royal"${dis()}></label>
+  <div class="grid2"><label class="field"><span>Cor do nome</span><input class="input" type="color" name="cor" value="${esc(m?.cor || '#9A9DA3')}"${dis()}></label>
+  <label class="field"><span>Ordem no catálogo</span><input class="input mono" name="ordem" inputmode="numeric" value="${m?.ordem ?? ''}" placeholder="1, 2, 3…"${dis()}></label></div>
+  <label class="field"><span>Descrição</span><textarea class="input" name="obs" maxlength="300" placeholder="Espessura, textura, uso indicado…"${dis()}>${esc(m?.obs || '')}</textarea></label>`;
+const fotoCard = m => card('Foto', `<div class="photo" id="fotoPrev">${foto(m)}</div><input type="hidden" name="foto" value="${esc(m?.foto || '')}">
+  ${canWrite() ? `<div class="row"><button type="button" class="btn" data-act="trocar-foto">${m?.foto ? 'Trocar foto' : 'Enviar foto'}</button>${m?.foto ? '<button type="button" class="btn btn-ghost-danger" data-act="remover-foto">Remover</button>' : ''}</div><small class="muted">Sem foto, o site mostra um ícone de rolo na cor do produto.</small>` : ''}`);
+P['novo-produto'] = () => canWrite() ? `<div class="page narrow">${head('Adicionar cor', { back: 'catalogo' })}
+  <form data-form="produto" data-id="" novalidate class="layout">
+    <div class="col">${card('Detalhes', produtoForm(null))}</div>
+    <div class="col">${fotoCard(null)}<button class="btn btn-primary btn-block" type="submit">Salvar</button></div>
+  </form></div>` : P.precisaEntrar('Adicionar cor');
+
+P.produto = id => {
+  const m = matById(id); if (!m) return P.notFound('Produto não encontrado', 'catalogo');
+  const r = resumo(id), u = S.ui.produto, ord = { aberta: 0, fechada: 1, esgotada: 2 };
+  const todas = S.mantas.filter(x => x.materialId === id);
+  const ms = todas.filter(x => u.tab === 'todas' || (u.tab === 'ativas' ? stManta(x) !== 'esgotada' : stManta(x) === u.tab))
+    .sort((p, q) => ord[stManta(p)] - ord[stManta(q)] || String(p.codigo).localeCompare(String(q.codigo)));
+  const sb = [...r.sb].sort((p, q) => String(p.criado).localeCompare(String(q.criado)));
+  const temAlgo = todas.length || S.sobras.some(x => x.materialId === id);
+  return `<div class="page">${notice()}${head(`<span class="cname" style="--c:${labelColor(m.cor)}">${esc(m.nome)}</span>`, { back: 'catalogo', acts: canWrite() ? `<a class="btn btn-primary" href="#novo-pedido" data-np-mat="${id}">Criar pedido</a>` : loginBtn() })}
+  <form data-form="produto" data-id="${id}" novalidate class="layout">
+    <div class="col">
+      ${card('Detalhes', produtoForm(m))}
+      <section class="card"><div class="ch"><h2>Mantas (rolos)</h2>${canWrite() ? `<button type="button" class="btn" data-act="entrada" data-id="${id}">Adicionar mantas</button>` : ''}</div>
+        ${tabsBar('produto', [['ativas', 'Em estoque'], ['aberta', 'Abertas'], ['fechada', 'Fechadas'], ['esgotada', 'Esgotadas']], u.tab)}
+        <div class="cb flush">${ms.length ? table(['Manta', 'Status', 'Uso do rolo', '>Restante', '~Entrada'], ms.map(mantaRow)) : empty(todas.length ? 'Nenhuma manta nessa situação' : 'Nenhum rolo desta cor', '', !todas.length && canWrite() ? `<button type="button" class="btn btn-primary" data-act="entrada" data-id="${id}">Adicionar mantas</button>` : '')}</div></section>
+      ${card('Sobras disponíveis', sb.length ? table(['Sobra', 'Guardada', 'Status'], sb.map(s => sobraRow(s, sobraScale(sb), false))) : '<p class="muted small">Nenhuma sobra desta cor.</p>', { flush: !!sb.length })}
+    </div>
+    <div class="col">
+      ${fotoCard(m)}
+      ${card('Estoque', `<ul class="kv"><li><span>Rolos fechados</span><b>${r.fe.length}</b></li><li><span>Rolos abertos</span><b>${r.ab.length}</b></li><li><span>Metros em rolos</span><b>${fm(r.metros)}</b></li><li><span>Sobras</span><b>${r.sb.length} · ${fm2(sum(r.sb, area))}</b></li><li><span>Total</span><b>${fm2(r.m2)}</b></li></ul>`)}
+      ${canWrite() && !temAlgo ? card('', `<button type="button" class="btn btn-ghost-danger" data-act="excluir-produto" data-id="${id}">Excluir esta cor</button>`) : ''}
+    </div>
+  </form></div>`;
+};
+
+P.manta = id => {
+  const m = S.mantas.find(x => x.id === id); if (!m) return P.notFound('Manta não encontrada', 'catalogo');
+  const st = stManta(m), hist = rollHistory(m), ger = S.sobras.filter(s => s.mantaId === m.id), ativa = st !== 'esgotada';
+  return `<div class="page">${notice()}${head(`<span class="mono">Manta ${esc(m.codigo)}</span>${pill(st)}`, { back: 'p-' + m.materialId, crumb: `<a href="#p-${m.materialId}">${esc(matName(m.materialId))}</a> · ${f2(m.largura)} × ${f2(m.comprimento)} m`, acts: ativa && canWrite() ? `<a class="btn btn-primary" href="#novo-pedido" data-np-mat="${m.materialId}">Criar pedido</a>` : '' })}
+  <form data-form="manta" data-id="${id}" novalidate class="layout">
+    <div class="col">
+      ${card('Rolo', `<ul class="kv"><li><span>Usado</span><b>${fm(m.usado || 0)} · ${Math.round((m.usado || 0) / m.comprimento * 100)}%</b></li><li><span>Restante</span><b>${fm(restante(m))} · ${fm2(restante(m) * m.largura)}</b></li></ul>${canSeePedidos() ? `<div class="plan-wrap">${drawRoll(m)}</div>${legend(true)}` : ''}`)}
+      ${canSeePedidos() ? card('Cortes nesta manta', hist.length ? table(['Registro', 'Data', 'Cliente', 'Medida', '>Consumo'], hist.slice().reverse().map(v => `<tr data-href="o-${v.id}"><td class="nowrap"><a class="t mono" href="#o-${v.id}">${esc(v.codigo)}</a><div class="small muted">${TIPO[v.tipo]}</div></td><td class="muted nowrap">${fDate(v.data)}</td><td>${esc(v.cliente || v.pedido || '—')}</td><td class="mono nowrap">${v.tipo === 'corte' ? `${f2(v.largura)} × ${f2(v.comprimento)}` : '—'}</td><td class="n">${fm(v.consumo)}</td></tr>`)) : '<p class="muted small">Nenhum corte. A manta está lacrada.</p>', { flush: !!hist.length }) : ''}
+    </div>
+    <div class="col">
+      ${card('Informações', `<label class="field"><span>Metragem restante (m)</span><input class="input mono" name="rest" inputmode="decimal" value="${f2(restante(m))}"${ativa && canWrite() ? '' : ' disabled'}><small>Mude depois de medir o rolo. A diferença fica registrada.</small></label>
+        <label class="field"><span>Lote / fornecedor</span><input class="input" name="lote" maxlength="80" value="${esc(m.lote || '')}"${dis()}></label>
+        <label class="field"><span>Data de entrada</span><input class="input" type="date" name="entrada" value="${m.entrada ? m.entrada.slice(0, 10) : ''}"${dis()}></label>`)}
+      ${ger.length ? card('Sobras que saíram dela', `<ul class="kv">${ger.map(s => `<li><span><a href="#s-${s.id}" class="mono">${esc(s.codigo)} ${dimTxt(s.largura, s.comprimento)}</a></span>${pill(s.status)}</li>`).join('')}</ul>`) : ''}
+      ${canWrite() ? card('', `<div class="row">${ativa ? `<button type="button" class="btn" data-act="encerrar" data-id="${id}">Encerrar manta</button>` : '<span class="muted small">Manta esgotada.</span>'}${!hist.length ? `<button type="button" class="btn btn-ghost-danger" data-act="excluir-manta" data-id="${id}">Excluir</button>` : ''}</div>`) : ''}
+    </div>
+  </form></div>`;
+};
+
+P.pedidos = () => canSeePedidos() ? `<div class="page">${notice()}${head('Pedidos', { acts: canWrite() ? '<a class="btn btn-primary" href="#novo-pedido">Criar pedido</a>' : '' })}
+  <section class="card">${tabsBar('pedidos', [['todos', 'Todos'], ['corte', 'Cortes'], ['venda', 'Vendas de sobra'], ['cancelado', 'Cancelados']], S.ui.pedidos.tab)}
+  <div class="filters"><input class="input" id="qO" placeholder="Buscar por cliente ou código" value="${esc(S.ui.pedidos.q)}" autocomplete="off"></div><div id="list">${P.pedidosList()}</div></section></div>` : P.precisaEntrar('Pedidos');
+P.pedidosList = () => {
+  const u = S.ui.pedidos, q = u.q.trim().toLowerCase();
+  const list = S.movimentos.filter(v => isPedido(v) && (u.tab === 'todos' || (u.tab === 'cancelado' ? v.desfeito : !v.desfeito && v.tipo === u.tab)) && (!q || [v.codigo, v.cliente, v.pedido, v.fonte?.codigo, matName(v.materialId)].some(t => String(t || '').toLowerCase().includes(q)))).sort(byDateDesc);
+  if (!list.length) return S.movimentos.some(isPedido) ? empty('Nenhum pedido encontrado', 'Mude o filtro ou a busca.') : empty('Nenhum pedido ainda', 'Cada corte de tapete vira um pedido.', canWrite() ? '<a class="btn btn-primary" href="#novo-pedido">Criar pedido</a>' : '');
+  return table(['Pedido', 'Data', 'Cliente', '~Produto', 'Medida', 'Status'], list.slice(0, 300).map(pedidoRow)) + (list.length > 300 ? `<p class="muted small" style="padding:10px 12px">Mostrando os 300 mais recentes de ${list.length}.</p>` : '');
+};
+
+P.pedido = id => {
+  if (!canSeePedidos()) return P.precisaEntrar('Pedido');
+  const v = S.movimentos.find(x => x.id === id); if (!v) return P.notFound('Pedido não encontrado', 'pedidos');
+  const ger = (v.sobrasGeradas || []).map(i => S.sobras.find(s => s.id === i)).filter(Boolean);
+  const fonteLink = v.fonte ? `<a class="mono" href="#${v.fonte.tipo === 'manta' ? 'm-' : 's-'}${v.fonte.id}">${v.fonte.tipo === 'manta' ? 'Manta' : 'Sobra'} ${esc(v.fonte.codigo)}</a>` : '—';
+  let plano = '';
+  if (v.tipo === 'corte') {
+    const rugLabel = `Tapete ${f2(v.largura)} × ${f2(v.comprimento)}`;
+    if (v.fonte?.tipo === 'manta') {
+      const W = S.mantas.find(x => x.id === v.fonte.id)?.largura || cfg().larguraPadrao, x = v.atravessado || W, y = v.consumo;
+      const piece = W - x > EPS ? [{ a0: x, l0: 0, w: W - x, l: y }] : [];
+      if (y > EPS) plano = drawPlan({ W, L: y, rug: { x, y }, rugLabel, keep: ger.length ? piece : [], lose: ger.length ? [] : piece });
+    } else {
+      const s = S.sobras.find(x => x.id === v.fonte?.id), o = s && fitSobra(s, v.largura, v.comprimento);
+      if (o) plano = drawPlan({ W: o.regionW, L: o.regionL, rug: o, rugLabel, keep: o.keep, lose: o.lose });
+    }
+  }
+  const ehPedido = isPedido(v);
+  const titulo = ehPedido ? `Pedido <span class="mono">${esc(v.codigo)}</span>` : `<span class="mono">${esc(v.codigo)}</span> · ${TIPO[v.tipo]}`;
+  return `<div class="page">${notice()}${head(`${titulo}${movPill(v)}`, { back: ehPedido ? 'pedidos' : v.fonte?.tipo === 'manta' ? 'm-' + v.fonte.id : 'sobras', crumb: `${fDateTime(v.data)}${v.por ? ' · por ' + esc(v.por) : ''}` })}
+  <form data-form="pedido" data-id="${id}" novalidate class="layout">
+    <div class="col">
+      ${card(v.tipo === 'corte' ? 'Tapete' : TIPO[v.tipo], `<div class="prod">${thumb(v.materialId)}<div>${cname(v.materialId)}<small class="mono">${v.largura ? `${f2(v.largura)} × ${f2(v.comprimento)} m` : '—'}</small></div></div>${plano ? `<div class="plan-wrap">${plano}</div>${legend(false)}` : ''}
+        <div class="divider"></div>
+        <ul class="kv"><li><span>Origem</span><b>${fonteLink}</b></li>${v.consumo ? `<li><span>Consumo da manta</span><b>${fm(v.consumo)}</b></li>` : ''}<li><span>Sobra gerada</span><b>${ger.length ? ger.map(s => `<a href="#s-${s.id}">${esc(s.codigo)} ${dimTxt(s.largura, s.comprimento)}</a>`).join('<br>') : '—'}</b></li>${v.perda > EPS ? `<li><span>Perda</span><b>${fm2(v.perda)}</b></li>` : ''}</ul>`)}
+    </div>
+    <div class="col">
+      ${card(ehPedido ? 'Cliente' : 'Observação', `${ehPedido ? `<label class="field"><span>Cliente</span><input class="input" name="cliente" maxlength="120" value="${esc(v.cliente || '')}"${dis()}></label>` : ''}<label class="field"><span>${ehPedido ? 'Observação do pedido' : 'Motivo / observação'}</span><textarea class="input" name="pedido" maxlength="300"${dis()}>${esc(v.pedido || '')}</textarea></label>`)}
+      ${v.desfeito ? card('', `<p class="muted small">${ehPedido ? 'Pedido cancelado' : 'Registro desfeito'} em ${fDateTime(v.desfeitoEm)}. O material voltou para o estoque.</p>`) : canWrite() ? card('', `<p class="muted small">${v.fonte?.tipo === 'manta' && v.consumo ? `Devolve ${fm(v.consumo)} para a manta` : 'A sobra volta a ficar disponível'}${ger.length ? ' e apaga a sobra gerada' : ''}.</p><button type="button" class="btn btn-ghost-danger" data-act="desfazer" data-id="${id}">${ehPedido ? 'Cancelar pedido' : 'Desfazer registro'}</button>`) : ''}
+    </div>
+  </form></div>`;
+};
+
+P['novo-pedido'] = () => {
+  if (!canWrite()) return P.precisaEntrar('Criar pedido');
+  const u = S.ui.np;
+  if (!matById(u.mat)) u.mat = matsSorted()[0]?.id || '';
+  if (!S.materiais.length) return `<div class="page narrow">${head('Criar pedido', { back: 'pedidos' })}${card('', empty('Cadastre uma cor primeiro', '', '<a class="btn btn-primary" href="#novo-produto">Adicionar cor</a>'))}</div>`;
+  return `<div class="page">${notice()}${head('Criar pedido', { back: 'pedidos' })}
+  <div class="layout"><div class="col">
+    ${card('Manta e medida', `<div class="prod" id="npThumb">${thumb(u.mat)}<label class="field" style="flex:1"><span>Cor da manta</span><select class="input" id="npMat">${matsSorted().map(m => `<option value="${m.id}"${m.id === u.mat ? ' selected' : ''}>${esc(m.nome)}</option>`).join('')}</select></label></div>
+      <div class="dims"><label class="field"><span>Largura (m)</span><input class="input" id="npA" inputmode="decimal" autocomplete="off" placeholder="1,00" value="${esc(u.a)}"></label><span class="x">×</span><label class="field"><span>Comprimento (m)</span><input class="input" id="npB" inputmode="decimal" autocomplete="off" placeholder="0,60" value="${esc(u.b)}"></label></div>
+      <div class="chips">${[[0.4, 0.6], [0.5, 0.8], [0.6, 0.9], [1, 0.6], [1.2, 1], [1.2, 1.5], [1.2, 2]].map(([a, b]) => `<button type="button" class="chip mono" data-preset="${a},${b}">${f2(a)}×${f2(b)}</button>`).join('')}</div>`)}
+    <section class="card"><div class="ch"><h2>De onde cortar</h2></div><div class="cb" id="npSrc"></div></section>
+  </div><div class="col">
+    ${card('Cliente', `<label class="field"><span>Cliente</span><input class="input" id="npCli" maxlength="120" autocomplete="off" value="${esc(u.cliente)}"></label><label class="field"><span>Observação</span><textarea class="input" id="npPed" maxlength="300">${esc(u.pedido)}</textarea></label>`)}
+    <section class="card"><div class="ch"><h2>Resumo</h2></div><div class="cb" id="npSum"></div></section>
+  </div></div></div>`;
+};
+function npUpdate() {
+  const u = S.ui.np, src = $('#npSrc'), sm = $('#npSum'); if (!src) return;
+  P.npCur = null;
+  const a = num(u.a), b = num(u.b), c = cfg();
+  const off = (msg, cls = '') => { src.innerHTML = `<div class="msg ${cls}">${msg}</div>`; sm.innerHTML = `<p class="muted small">Preencha a medida para ver o resumo.</p><button class="btn btn-primary btn-block" disabled>Criar pedido</button>`; };
+  if (!(a > 0 && b > 0)) return off('<b>Digite a largura e o comprimento do tapete.</b><br>Ex.: 1,00 × 0,60. Use vírgula ou ponto.');
+  if (a > 30 || b > 30) return off('Medida muito grande. Confira se digitou em metros (ex.: 0,60 e não 60).', 'err');
+  const ms = S.mantas.filter(m => m.materialId === u.mat && stManta(m) !== 'esgotada');
+  const maxW = Math.max(c.larguraPadrao, ...ms.map(m => m.largura));
+  if (Math.min(a, b) > maxW + EPS) return off(`Não cabe em uma manta: o lado menor precisa ter até ${fm(maxW)}.`, 'err');
+  const cands = recommend(u.mat, a, b);
+  if (!cands.length) {
+    const abs = ms.filter(m => stManta(m) === 'aberta');
+    return off(`<b>Sem estoque de ${esc(matName(u.mat))} para essa medida.</b><br>${ms.length ? `As mantas abertas não têm metragem suficiente (maior restante: ${fm(Math.max(0, ...abs.map(restante)))}).` : 'Não há rolos desta cor.'} <a class="link" href="#p-${u.mat}">Adicionar mantas</a>`, 'err');
+  }
+  if (!cands.some(x => x.key === u.sel)) u.sel = cands[0].key;
+  const cur = cands.find(x => x.key === u.sel), o = cur.o;
+  src.innerHTML = `<div class="srcs" role="radiogroup" aria-label="De onde cortar">${cands.map((x, i) => {
+    const s = x.src, exato = x.tipo === 'sobra' && !x.o.keep.length && x.o.waste < EPS;
+    const t = x.tipo === 'sobra' ? `Sobra <span class="mono">${esc(s.codigo)}</span> · <span class="mono">${dimTxt(s.largura, s.comprimento)}</span>` : `${x.fechada ? 'Abrir manta' : 'Manta'} <span class="mono">${esc(s.codigo)}</span>`;
+    const sub = x.tipo === 'sobra' ? `${exato ? 'Encaixe exato · ' : ''}guardada ${age(s.criado)}` : x.fechada ? `Lacrada${x.outras ? ` · mais ${x.outras} fechada(s)` : ''}` : `Restam ${fm(restante(s))}`;
+    return `<button type="button" class="src" role="radio" aria-checked="${x.key === u.sel}" data-src="${x.key}"><span class="radio"></span><span class="t"><b>${t}</b>${i === 0 ? ' <span class="pill ok">Recomendado</span>' : ''}<small>${sub}</small></span><span class="r">${x.tipo === 'sobra' ? 'sem gastar manta' : 'usa ' + fm(x.o.y)}</span></button>`;
+  }).join('')}</div>
+    <div class="plan-wrap">${drawPlan({ W: o.regionW, L: o.regionL, rug: o, rugLabel: `Tapete ${f2(a)} × ${f2(b)}`, keep: o.keep, lose: o.lose })}</div>${legend(false)}`;
+  const depois = cur.tipo === 'manta' ? r3(restante(cur.src) - o.y) : 0;
+  sm.innerHTML = `<ul class="kv"><li><span>Tapete</span><b>${f2(a)} × ${f2(b)} m</b></li><li><span>Origem</span><b>${cur.tipo === 'sobra' ? 'Sobra' : 'Manta'} ${esc(cur.src.codigo)}</b></li>
+    ${cur.tipo === 'manta' ? `<li><span>Corta da manta</span><b>${fm(o.y)}</b></li><li><span>Manta fica com</span><b>${fm(depois)}</b></li>` : ''}
+    <li><span>Sobra guardada</span><b>${o.keep.length ? o.keep.map(p => dimTxt(p.w, p.l)).join('<br>') : '—'}</b></li>${o.waste > EPS ? `<li><span>Perda</span><b>${fm2(o.waste)}</b></li>` : ''}</ul>
+    <button class="btn btn-primary btn-block" data-act="criar-pedido">Criar pedido</button>`;
+  P.npCur = { cand: cur, a, b };
+}
+
+P.sobras = () => `<div class="page">${notice()}${head('Sobras')}
+  <section class="card">${tabsBar('sobras', [['disponivel', 'Disponíveis'], ['vendida', 'Vendidas'], ['usada', 'Usadas'], ['descartada', 'Descartadas'], ['todas', 'Todas']], S.ui.sobras.tab)}
+  <div class="filters"><span class="small muted">O cliente quer</span><div class="dims"><input class="input" id="sA" inputmode="decimal" placeholder="1,00" aria-label="Largura" value="${esc(S.ui.sobras.a)}" autocomplete="off"><span class="x">×</span><input class="input" id="sB" inputmode="decimal" placeholder="0,60" aria-label="Comprimento" value="${esc(S.ui.sobras.b)}" autocomplete="off"></div></div>
+  <div id="list">${P.sobrasList()}</div></section></div>`;
+P.sobrasList = () => {
+  const u = S.ui.sobras, a = num(u.a), b = num(u.b), busca = a > 0 && b > 0;
+  let list = S.sobras.filter(s => u.tab === 'todas' || s.status === u.tab);
+  if (busca) list = list.filter(s => s.status === 'disponivel' && fitSobra(s, a, b)).sort((p, q) => area(p) - area(q));
+  else list.sort((p, q) => String(p.criado).localeCompare(String(q.criado)));
+  const top = busca ? `<div class="msg" style="margin:10px 12px">${list.length ? `<b>${list.length} sobra(s) servem para ${f2(a)} × ${f2(b)} m.</b> A menor aparece primeiro.` : `Nenhuma sobra serve para ${f2(a)} × ${f2(b)} m.${canWrite() ? ` <a class="link" href="#novo-pedido" data-np-a="${esc(u.a)}" data-np-b="${esc(u.b)}">Criar pedido cortando de manta</a>` : ''}`}</div>` : '';
+  if (!list.length) return top || empty('Nenhuma sobra por aqui', `As sobras aparecem quando um corte deixa um pedaço aproveitável (lado menor a partir de ${fm(cfg().sobraMin)}).`);
+  return top + table(['Sobra', '~Cor', 'Guardada', 'Status'], list.map(s => sobraRow(s, sobraScale(list))));
+};
+
+P.sobra = id => {
+  const s = S.sobras.find(x => x.id === id); if (!s) return P.notFound('Sobra não encontrada', 'sobras');
+  const mt = S.mantas.find(m => m.id === s.mantaId), orig = S.movimentos.find(v => v.id === s.origemMovId), baixa = S.movimentos.find(v => v.id === s.baixaMovId);
+  const disp = s.status === 'disponivel';
+  const k = Math.min(300 / Math.max(s.largura, s.comprimento), 160 / Math.min(s.largura, s.comprimento));
+  return `<div class="page">${notice()}${head(`<span class="mono">Sobra ${esc(s.codigo)}</span>${pill(s.status)}`, { back: 'sobras', crumb: `<a href="#p-${s.materialId}">${esc(matName(s.materialId))}</a> · guardada ${age(s.criado)}` })}
+  <div class="layout"><div class="col">
+    ${card('Peça', `<div class="bigpic">${miniRect(s, Math.max(Math.max(s.largura, s.comprimento) * k + 10, 60), Math.min(s.largura, s.comprimento) * k + 10)}</div><ul class="kv"><li><span>Medida</span><b>${dimTxt(s.largura, s.comprimento)}</b></li><li><span>Área</span><b>${fm2(area(s))}</b></li><li><span>Cor</span><b>${cname(s.materialId)}</b></li></ul>`)}
+    ${card('Histórico', `<ul class="kv"><li><span>Saiu da manta</span><b>${mt ? `<a href="#m-${mt.id}">${esc(mt.codigo)}</a>` : '—'}</b></li>${canSeePedidos() ? `<li><span>No pedido</span><b>${orig ? `<a href="#o-${orig.id}">${esc(orig.codigo)}</a>` : '—'}</b></li>${baixa ? `<li><span>${baixa.tipo === 'corte' ? 'Cortada no pedido' : TIPO[baixa.tipo]}</span><b><a href="#o-${baixa.id}">${esc(baixa.codigo)}</a>${baixa.cliente ? ' · ' + esc(baixa.cliente) : ''}</b></li>` : ''}` : ''}</ul>`)}
+  </div><div class="col">
+    ${!disp ? card('', `<p class="muted small">Esta sobra não está mais no estoque.${baixa ? ` Para devolver, cancele o registro <a href="#o-${baixa.id}">${esc(baixa.codigo)}</a>.` : ''}</p>`) : canWrite() ? card('Vender esta sobra', `<a class="btn btn-primary btn-block" href="#novo-pedido" data-np-sobra="${s.id}">Cortar um tapete dela</a><button class="btn btn-block" data-act="vender" data-id="${s.id}">Vender inteira</button><button class="btn btn-block btn-ghost-danger" data-act="descartar" data-id="${s.id}">Descartar</button>`) : card('', loginBtn() || '<p class="muted small">Disponível para venda.</p>')}
+  </div></div></div>`;
+};
+
+P.regras = () => {
+  const c = cfg();
+  return `<div class="page narrow">${notice()}${head('Regras de corte')}
+  <form data-form="regras" data-id="" novalidate class="col">
+    ${card('Medidas da manta', `<div class="grid2"><label class="field"><span>Largura padrão (m)</span><input class="input mono" name="w" inputmode="decimal" value="${f2(c.larguraPadrao)}"${dis()}></label><label class="field"><span>Comprimento padrão (m)</span><input class="input mono" name="l" inputmode="decimal" value="${f2(c.comprimentoPadrao)}"${dis()}></label></div><small class="muted">Usadas como padrão ao adicionar mantas.</small>`)}
+    ${card('Sobras', `<label class="field"><span>Menor sobra aproveitável (m)</span><input class="input mono" name="min" inputmode="decimal" value="${f2(c.sobraMin)}" style="max-width:200px"${dis()}><small>Pedaços com o lado menor abaixo disso contam como perda e não vão para o estoque de sobras.</small></label>`)}
+  </form></div>`;
+};
+P.notFound = (t, back) => `<div class="page narrow">${head(t, { back })}${card('', empty(t, 'Pode ter sido excluído por outra pessoa.', `<a class="btn" href="#${back}">Voltar</a>`))}</div>`;
+P.precisaEntrar = t => `<div class="page narrow">${head(t, { back: 'catalogo' })}${card('', empty('Só para a equipe', 'Entre com sua conta para ver e criar pedidos.', '<button class="btn btn-primary" data-act="login">Entrar</button>'))}</div>`;
+
+/* ---------- salvar formulários ---------- */
+const SAVE = {
+  async produto(fd, id) {
+    const nome = String(fd.get('nome') || '').trim();
+    if (!nome) return 'Dê um nome para a cor.';
+    if (S.materiais.some(x => x.id !== id && x.nome.toLowerCase() === nome.toLowerCase())) return 'Já existe uma cor com esse nome.';
+    const ord = num(fd.get('ordem'));
+    const d = { nome, cor: String(fd.get('cor') || '#9A9DA3'), obs: String(fd.get('obs') || '').trim(), foto: String(fd.get('foto') || ''), ordem: Number.isFinite(ord) ? ord : 999 };
+    if (id) return (await write(() => store.update('materiais', id, d))) ? { msg: 'Salvo.' } : false;
+    const nid = uid();
+    return (await write(() => store.set('materiais', nid, { ...d, criado: new Date().toISOString() }))) ? { msg: `“${nome}” adicionada. Agora adicione os rolos.`, go: 'p-' + nid } : false;
+  },
+  async manta(fd, id) {
+    const m = S.mantas.find(x => x.id === id); if (!m) return 'A manta não existe mais.';
+    const d = { lote: String(fd.get('lote') || '').trim() };
+    if (fd.get('entrada')) d.entrada = new Date(fd.get('entrada') + 'T12:00:00').toISOString();
+    const rest = fd.has('rest') ? num(fd.get('rest')) : restante(m);
+    if (!(rest >= 0 && rest <= m.comprimento + EPS)) return `A metragem restante deve ficar entre 0 e ${f2(m.comprimento)} m.`;
+    const delta = r3(restante(m) - rest);
+    const ok = await write(async () => {
+      if (Math.abs(delta) >= EPS) {
+        Object.assign(d, { usado: r3(m.comprimento - rest), aberta: true, esgotada: rest <= EPS });
+        await addMov({ tipo: 'ajuste', materialId: m.materialId, fonte: { tipo: 'manta', id: m.id, codigo: m.codigo }, consumo: delta, pedido: 'Metragem medida: ' + fm(rest) });
+      }
+      await store.update('mantas', m.id, d);
+    });
+    return ok ? { msg: Math.abs(delta) >= EPS ? `${m.codigo} salva. Ajuste de ${fm(Math.abs(delta))} registrado.` : `${m.codigo} salva.` } : false;
+  },
+  async pedido(fd, id) {
+    const d = { pedido: String(fd.get('pedido') || '').trim() };
+    if (fd.has('cliente')) d.cliente = String(fd.get('cliente') || '').trim();
+    return (await write(() => store.update('movimentos', id, d))) ? { msg: 'Pedido salvo.' } : false;
+  },
+  async regras(fd) {
+    const w = num(fd.get('w')), l = num(fd.get('l')), mn = num(fd.get('min'));
+    if (!(w > 0 && w <= 5 && l > 0 && l <= 100 && mn >= 0.05 && mn <= 2)) return 'Confira os valores: largura até 5 m, comprimento até 100 m, menor sobra entre 0,05 e 2 m.';
+    return (await write(() => store.set('config', 'geral', { ...S.config, larguraPadrao: r3(w), comprimentoPadrao: r3(l), sobraMin: r3(mn) }))) ? { msg: 'Regras salvas.' } : false;
+  },
+};
+function setDirty(form) { S.dirty = form ? { name: form.dataset.form, id: form.dataset.id } : null; $('#savebar').hidden = !S.dirty; }
+async function saveForm() {
+  const form = $('[data-form]'); if (!form) return setDirty(null);
+  const res = await SAVE[form.dataset.form](new FormData(form), form.dataset.id || '');
+  if (typeof res === 'string') return toast(res, 'bad');
+  if (!res) return;
+  setDirty(null); toast(res.msg);
+  if (res.go) go(res.go, true); else render(true);
+}
+
+/* ---------- navegação ---------- */
+const PAGES = ['catalogo', 'novo-produto', 'pedidos', 'novo-pedido', 'sobras', 'regras'];
+function parse(h) {
+  h = h || 'catalogo';
+  const m = h.match(/^([pmos])-(.+)$/);
+  if (m) return { page: { p: 'produto', m: 'manta', o: 'pedido', s: 'sobra' }[m[1]], id: m[2] };
+  return { page: PAGES.includes(h) ? h : 'catalogo' };
+}
+const NAV_OF = { produto: 'catalogo', manta: 'catalogo', 'novo-produto': 'catalogo', pedido: 'pedidos', 'novo-pedido': 'pedidos', sobra: 'sobras' };
+function go(h, force) {
+  if (S.dirty && !force) {
+    modal({ title: 'Sair sem salvar?', body: '<p>As alterações desta página serão perdidas.</p>', submit: 'Descartar e sair', danger: true, onSubmit: () => { setDirty(null); go(h, true); } });
+    return;
+  }
+  setDirty(null);
+  try { if (location.hash.slice(1) !== h) history.pushState(null, '', '#' + h); } catch (e) { location.hash = h; }
+  S.route = parse(h);
+  render(true); window.scrollTo(0, 0);
+}
+window.addEventListener('popstate', () => { setDirty(null); S.route = parse(location.hash.slice(1)); render(true); });
+window.addEventListener('hashchange', () => { const r = parse(location.hash.slice(1)); if (r.page !== S.route.page || r.id !== S.route.id) { setDirty(null); S.route = r; render(true); } });
+
+let tmr = 0;
+function scheduleRender() { if (tmr) return; tmr = setTimeout(() => { tmr = 0; if (ready()) seedCatalogo(); render(); }, 16); }
+function render(force) {
+  const r = S.route;
+  document.querySelectorAll('.navs .nav').forEach(a => { if (a.dataset.nav === (NAV_OF[r.page] || r.page)) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+  $('#navPedidos').hidden = !canSeePedidos();
+  $('#who').innerHTML = S.mode === 'firebase' ? (S.authUser ? `<i class="dot on"></i><span class="em">${esc(S.authUser.email)}</span><button class="btn btn-sm" data-act="logout">Sair</button>` : '<button class="btn btn-sm btn-primary" data-act="login">Entrar</button>')
+    : S.mode === 'local' ? '<i class="dot local"></i>Demonstração' : '<i class="dot"></i>Conectando…';
+  const el = $('#app');
+  if (!ready()) { el.innerHTML = '<div class="loading">Carregando…</div>'; return; }
+  const ae = document.activeElement;
+  if (!force && (S.dirty || (ae && el.contains(ae) && /INPUT|TEXTAREA|SELECT/.test(ae.tagName)))) { S.pending = true; return; }
+  S.pending = false;
+  el.innerHTML = P[r.page](r.id);
+  if (r.page === 'novo-pedido') npUpdate();
+}
+document.addEventListener('focusout', () => setTimeout(() => { if (S.pending && !S.dirty) render(); }, 0));
+
+/* ---------- eventos ---------- */
+document.addEventListener('input', e => {
+  const t = e.target;
+  if (t.closest('#dlg')) return;
+  const f = t.closest('[data-form]');
+  if (f) { if (!S.dirty && canWrite()) setDirty(f); return; }
+  const np = S.ui.np, map = { npA: 'a', npB: 'b', npCli: 'cliente', npPed: 'pedido' };
+  if (map[t.id]) { np[map[t.id]] = t.value; if (t.id === 'npA' || t.id === 'npB') npUpdate(); return; }
+  if (t.id === 'qCat') { S.ui.cat.q = t.value; $('#list').innerHTML = P.catalogoList(); }
+  if (t.id === 'qO') { S.ui.pedidos.q = t.value; $('#list').innerHTML = P.pedidosList(); }
+  if (t.id === 'sA' || t.id === 'sB') { S.ui.sobras[t.id === 'sA' ? 'a' : 'b'] = t.value; $('#list').innerHTML = P.sobrasList(); }
+});
+document.addEventListener('change', e => {
+  if (e.target.id === 'npMat') { S.ui.np.mat = e.target.value; S.ui.np.sel = null; $('#npThumb .thumb').outerHTML = thumb(S.ui.np.mat); npUpdate(); }
+});
+$('#fotoFile').addEventListener('change', async e => {
+  const file = e.target.files?.[0]; e.target.value = '';
+  const form = $('[data-form="produto"]'); if (!file || !form) return;
+  try {
+    const url = await resizeImage(file);
+    form.foto.value = url; $('#fotoPrev').innerHTML = `<img src="${url}" alt="">`;
+    setDirty(form); toast('Foto pronta. Clique em Salvar.');
+  } catch (err) { toast('Não foi possível ler essa imagem.', 'bad'); }
+});
+document.addEventListener('submit', e => { const f = e.target.closest('[data-form]'); if (f) { e.preventDefault(); if (!canWrite()) return; if (!S.dirty) setDirty(f); saveForm(); } });
+document.addEventListener('click', async e => {
+  const t = e.target;
+  if (t.closest('#dlg')) return;
+  const a = t.closest('a[href^="#"]');
+  const tr = !a && t.closest('tr[data-href]');
+  if (a || tr) {
+    e.preventDefault();
+    const np = S.ui.np, d = (a || tr).dataset;
+    if (d.npMat) { np.mat = d.npMat; np.sel = null; }
+    if (d.npA !== undefined) { np.a = d.npA; np.b = d.npB; }
+    if (d.npSobra) { const s = S.sobras.find(x => x.id === d.npSobra); if (s) { np.mat = s.materialId; np.sel = 'sobra:' + s.id; } }
+    go(a ? a.getAttribute('href').slice(1) : tr.dataset.href);
+    return;
+  }
+  const tab = t.closest('[data-tab]');
+  if (tab) {
+    if (S.dirty) return toast('Salve ou descarte as alterações primeiro.');
+    S.ui[tab.dataset.tab][tab.dataset.key || 'tab'] = tab.dataset.val;
+    if (tab.dataset.tab === 'cat') { document.querySelectorAll('[data-tab="cat"]').forEach(b => b.setAttribute('aria-pressed', b === tab)); $('#list').innerHTML = P.catalogoList(); }
+    else render(true);
+    return;
+  }
+  const src = t.closest('[data-src]');
+  if (src) { S.ui.np.sel = src.dataset.src; npUpdate(); return; }
+  const pre = t.closest('[data-preset]');
+  if (pre) { const [x, y] = pre.dataset.preset.split(',').map(Number); S.ui.np.a = f2(x); S.ui.np.b = f2(y); $('#npA').value = S.ui.np.a; $('#npB').value = S.ui.np.b; npUpdate(); return; }
+  const b = t.closest('[data-act]'); if (!b) return;
+  const id = b.dataset.id, act = b.dataset.act;
+  if (act === 'salvar-edicao') saveForm();
+  else if (act === 'descartar-edicao') { setDirty(null); render(true); }
+  else if (act === 'login') dlgLogin();
+  else if (act === 'logout') { if (S.dirty) setDirty(null); await store.au.signOut(store.auth); toast('Você saiu.'); }
+  else if (act === 'trocar-foto') $('#fotoFile').click();
+  else if (act === 'remover-foto') { const f = $('[data-form="produto"]'); f.foto.value = ''; $('#fotoPrev').innerHTML = rollIcon(f.cor.value); setDirty(f); }
+  else if (act === 'entrada') dlgEntrada(id);
+  else if (act === 'encerrar') { const m = S.mantas.find(x => x.id === id); m && dlgEncerrar(m); }
+  else if (act === 'excluir-manta') { const m = S.mantas.find(x => x.id === id); confirmDlg(`Excluir ${esc(m?.codigo)}`, '<p>A manta ainda não tem cortes. Use para corrigir uma entrada feita por engano.</p>', 'Excluir manta', async () => { const mat = m.materialId; await store.del('mantas', id); go('p-' + mat, true); }); }
+  else if (act === 'excluir-produto') { const m = matById(id); confirmDlg('Excluir cor', `<p>Excluir “${esc(m?.nome)}” do catálogo? Ela não tem rolos nem sobras.</p>`, 'Excluir', async () => { await store.del('materiais', id); go('catalogo', true); }); }
+  else if (act === 'vender') { const s = S.sobras.find(x => x.id === id); s && dlgVender(s); }
+  else if (act === 'descartar') { const s = S.sobras.find(x => x.id === id); s && dlgDescartar(s); }
+  else if (act === 'criar-pedido') {
+    const cur = P.npCur; if (!cur) return;
+    const u = S.ui.np; let res;
+    const ok = await write(async () => { res = await applyCut(cur.cand, { a: r3(cur.a), b: r3(cur.b), cliente: u.cliente.trim(), pedido: u.pedido.trim() }); });
+    if (!ok) return;
+    toast(`Pedido ${res.mov.codigo} criado${res.novas.length ? '. Sobra guardada: ' + res.novas.map(s => `${s.codigo} (${dimTxt(s.largura, s.comprimento)})`).join(', ') : ''}.`);
+    Object.assign(u, { a: '', b: '', cliente: '', pedido: '', sel: null });
+    go('o-' + res.movId, true);
+  }
+  else if (act === 'desfazer') {
+    const v = S.movimentos.find(x => x.id === id); if (!v) return;
+    const ped = isPedido(v);
+    modal({
+      title: ped ? `Cancelar pedido ${esc(v.codigo)}` : `Desfazer ${esc(v.codigo)}`, submit: ped ? 'Cancelar pedido' : 'Desfazer', danger: true,
+      body: `<p>${v.fonte?.tipo === 'manta' && v.consumo ? `Devolve ${fm(v.consumo)} para a manta ${esc(v.fonte.codigo)}` : `A sobra ${esc(v.fonte?.codigo)} volta a ficar disponível`}${(v.sobrasGeradas || []).length ? ' e apaga a sobra gerada' : ''}.</p><p class="muted small">O registro continua na lista como cancelado.</p>`,
+      onSubmit: async () => { let msg = ''; const ok = await write(async () => { try { await undoMov(v); } catch (err) { msg = 'Não dá para desfazer: ' + err.message; } }); if (msg) return msg; if (!ok) return false; toast(`${v.codigo} ${ped ? 'cancelado' : 'desfeito'}.`); },
+    });
+  }
+});
+
+/* ---------- início ---------- */
+function subMov() {
+  if (unsubMov) { unsubMov(); unsubMov = null; }
+  if (!canSeePedidos()) { S.movimentos = []; S.loaded.add('movimentos'); scheduleRender(); return; }
+  S.loaded.delete('movimentos');
+  unsubMov = store.sub('movimentos', list => { S.movimentos = list; S.loaded.add('movimentos'); scheduleRender(); }, () => { S.movimentos = []; S.loaded.add('movimentos'); scheduleRender(); });
+}
+async function boot() {
+  S.route = parse(location.hash.slice(1)); render(true);
+  const conf = window.FJR_FIREBASE;
+  if (conf && conf.apiKey) {
+    try { store = await firebaseStore(conf); S.mode = 'firebase'; }
+    catch (e) { console.error(e); store = localStore(); S.mode = 'local'; toast('Não foi possível conectar ao banco de dados. Usando modo demonstração.', 'bad'); }
+  } else { store = localStore(); S.mode = 'local'; }
+  for (const col of COLS) {
+    store.sub(col, list => {
+      if (col === 'config') { const g = list.find(d => d.id === 'geral'); const { id, ...rest } = g || {}; S.config = rest; }
+      else S[col] = list;
+      S.loaded.add(col);
+      scheduleRender();
+    }, err => { console.error(err); S.loaded.add(col); scheduleRender(); });
+  }
+  if (S.mode === 'firebase') {
+    store.au.onAuthStateChanged(store.auth, u => {
+      S.authUser = u ? { uid: u.uid, email: u.email } : null;
+      subMov(); if (!S.dirty) render(true);
+    });
+  } else subMov();
+}
+boot();
+})();
+</script>
+</body>
+</html>
