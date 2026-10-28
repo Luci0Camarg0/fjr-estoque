@@ -83,6 +83,13 @@ main{padding-block:24px 90px}
 .unit svg{width:110px;height:84px}
 .unit .code{font-family:var(--f-mono);font-weight:500}
 .unit .sub{font-size:.8rem;color:var(--muted)}
+.unit .sub b{color:var(--ink);font-weight:600}
+.pcs-tag{font-size:.75rem;font-weight:500;color:var(--warn);background:var(--warn-bg);border-radius:6px;padding:1px 8px}
+.pcs{display:flex;flex-direction:column;gap:8px}
+.pcs h4{margin:0;font-size:.9rem}
+.pcs .inline{flex-wrap:wrap}
+.pcs .inline .field{min-width:110px}
+.pc{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:7px 10px}
 .unit.done{opacity:.5}
 .unit.add{border-style:dashed;background:transparent;color:var(--muted);justify-content:center;min-height:190px}
 .unit.add:hover{color:var(--ink);border-color:var(--accent)}
@@ -117,7 +124,7 @@ input[type=color].input{padding:3px;height:38px;cursor:pointer}
 .big{display:flex;gap:16px;align-items:center}
 .big svg{width:120px;height:92px;flex:none}
 .big .info{display:flex;flex-direction:column;gap:6px;flex:1;min-width:0}
-.big .rest{font-family:var(--f-mono);font-size:1.1rem}
+.big .rest{font-family:var(--f-mono);font-size:1rem}
 .photo{border-radius:10px;overflow:hidden;background:#000;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;max-height:180px}
 .photo img{width:100%;height:100%;object-fit:cover}
 .photo svg{width:50%}
@@ -203,8 +210,10 @@ const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 
 const fDate = iso => iso ? new Date(iso).toLocaleDateString('pt-BR') : '—';
 const prodById = id => S.produtos.find(p => p.id === id);
 const restante = u => r3(u.capacidade - (u.usado || 0));
+const pecas = u => Array.isArray(u.pedacos) ? u.pedacos : [];
+const medida = pc => `${f2(pc.l)} × ${f2(pc.c)} m`;
 const estado = u => u.esgotada ? 'acabou' : (u.aberta || (u.usado || 0) > EPS) ? 'aberta' : 'fechada';
-const word = (k, st) => ({ fechada: KIND[k].f ? 'Fechada' : 'Fechado', aberta: KIND[k].f ? 'Aberta' : 'Aberto', acabou: 'Acabou' })[st];
+const word = (k, st) => ({ fechada: KIND[k].f ? 'Lacrada' : 'Lacrado', aberta: KIND[k].f ? 'Aberta' : 'Aberto', acabou: 'Acabou' })[st];
 const pill = (k, st) => `<span class="pill ${st === 'aberta' ? 'hot' : st === 'fechada' ? 'closed' : ''}">${word(k, st)}</span>`;
 const ordem = p => p.ordem ?? 999;
 const prodsOf = tipo => S.produtos.filter(p => (p.tipo || 'manta') === tipo).sort((a, b) => ordem(a) - ordem(b) || a.nome.localeCompare(b.nome, 'pt-BR'));
@@ -223,9 +232,11 @@ function rollIcon(cor, ratio = 1, st = 'fechada') {
   const c = cor || '#8892a6', k = st === 'acabou' ? 0.18 : 0.35 + 0.65 * Math.sqrt(Math.max(0, Math.min(1, ratio)));
   const ry = 32 * k, cy = 84 - ry;
   const tail = st === 'fechada' ? '' : `<path d="M40 84 H150 L156 102 H30 Z" style="fill:${shade(c, .72)}"/>`;
-  const band = st === 'fechada' ? `<rect x="84" y="${(cy - ry).toFixed(1)}" width="8" height="${(2 * ry).toFixed(1)}" fill="rgba(255,255,255,.55)"/>` : '';
+  const band = st === 'fechada' ? `<rect x="84" y="${(cy - ry).toFixed(1)}" width="8" height="${(2 * ry).toFixed(1)}" fill="rgba(255,255,255,.55)"/>${seal(88, cy)}` : '';
   return `<svg viewBox="0 0 160 110" aria-hidden="true">${tail}<rect x="40" y="${(cy - ry).toFixed(1)}" width="96" height="${(2 * ry).toFixed(1)}" rx="${ry.toFixed(1)}" style="fill:${shade(c, 1)}"/>${band}<ellipse cx="40" cy="${cy.toFixed(1)}" rx="${(ry * 0.62).toFixed(1)}" ry="${ry.toFixed(1)}" style="fill:${shade(c, .62)}"/><ellipse cx="40" cy="${cy.toFixed(1)}" rx="${(ry * 0.4).toFixed(1)}" ry="${(ry * 0.65).toFixed(1)}" style="fill:${shade(c, .8)}"/><circle cx="40" cy="${cy.toFixed(1)}" r="5" fill="#d9c3a0"/></svg>`;
 }
+/* Lacre: selo laranja com visto, só em rolo ou balde 100% cheio. */
+const seal = (x, y) => `<circle cx="${x}" cy="${y.toFixed(1)}" r="12" fill="#F2552C" stroke="#fff" stroke-width="2.5"/><path d="M${x - 5.5} ${(y + 0.5).toFixed(1)} l4 4 l7.5 -8" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`;
 /* Balde: fechado = com tampa; aberto = sem tampa, tinta no nível que resta. */
 function bucketIcon(cor, ratio = 1, st = 'fechada') {
   const c = cor || '#8892a6', lv = st === 'acabou' ? 0 : Math.max(0, Math.min(1, ratio));
@@ -235,7 +246,7 @@ function bucketIcon(cor, ratio = 1, st = 'fechada') {
     <path d="M46 ${top} H114 L106 ${bot} Q80 ${bot + 6} 54 ${bot} Z" fill="#cfd3da"/>
     <rect x="40" y="${y.toFixed(1)}" width="80" height="${(bot + 8 - y).toFixed(1)}" clip-path="url(#bk${svgN})" style="fill:${c}"/>
     <path d="M46 ${top} H114 L106 ${bot} Q80 ${bot + 6} 54 ${bot} Z" fill="none" stroke="#8d939e" stroke-width="2"/>
-    <path d="M48 ${top + 4} Q80 -14 112 ${top + 4}" fill="none" stroke="#8d939e" stroke-width="3"/>${lid}</svg>`;
+    <path d="M48 ${top + 4} Q80 -14 112 ${top + 4}" fill="none" stroke="#8d939e" stroke-width="3"/>${lid}${st === 'fechada' ? seal(80, 64) : ''}</svg>`;
 }
 let svgN = 0;
 const unitIcon = (tipo, cor, ratio, st) => tipo === 'tinta' ? bucketIcon(cor, ratio, st) : rollIcon(cor, ratio, st);
@@ -325,13 +336,17 @@ function dlgUnidade(id) {
   const p = prodById(u.produtoId), k = p?.tipo || 'manta', K = KIND[k], st = estado(u), rest = restante(u);
   const body = `<div class="big" style="--c:${labelColor(p?.cor)}">${unitIcon(k, p?.cor, rest / u.capacidade, st)}<div class="info">
       <div class="row">${pill(k, st)}<span class="muted small">entrada ${fDate(u.entrada)}</span></div>
-      <div class="rest">${st === 'acabou' ? 'Acabou' : st === 'fechada' ? `${K.f ? 'Inteira' : 'Cheio'}: ${qty(u.capacidade, k)}` : `Resta ${qty(rest, k)} de ${qty(u.capacidade, k)}`}</div>
-      <span class="bar"><i style="width:${st === 'acabou' ? 0 : (rest / u.capacidade * 100).toFixed(1)}%"></i></span></div></div>
+      <div class="rest">${st === 'acabou' ? 'Acabou' : st === 'fechada' ? `${K.f ? 'Lacrada' : 'Lacrado'}, 100%: ${qty(u.capacidade, k)}` : `Usou ${qty(u.usado || 0, k)} · resta ${qty(rest, k)}`}</div>
+      <span class="bar"><i style="width:${st === 'acabou' ? 0 : (rest / u.capacidade * 100).toFixed(1)}%"></i></span>
+      ${st === 'aberta' ? `<span class="muted small">de ${qty(u.capacidade, k)} do ${K.f ? 'rolo' : 'balde'}</span>` : ''}</div></div>
     ${st === 'acabou' ? `<p class="muted small">${K.f ? 'Esta manta acabou' : 'Este balde acabou'} e não conta mais no estoque.</p>` : `
     <div class="sep"></div>
     <form class="inline" id="fUso" novalidate><label class="field"><span>Usei quanto? (${K.un})</span><input class="input mono" name="v" inputmode="decimal" placeholder="${k === 'manta' ? '1,50' : '2,00'}" autocomplete="off"></label><button class="btn btn-primary" type="submit">Registrar uso</button></form>
     <form class="inline" id="fRest" novalidate hidden><label class="field"><span>Quanto resta? (${K.un})</span><input class="input mono" name="v" inputmode="decimal" value="${f2(rest)}" autocomplete="off"></label><button class="btn" type="submit">Salvar</button></form>
-    <div class="row">${st === 'fechada' ? `<button class="btn" data-u="abrir">${K.f ? 'Marcar como aberta' : 'Marcar como aberto'}</button>` : ''}<button class="link" data-u="corrigir">Corrigir quanto resta</button></div>`}`;
+    <div class="row">${st === 'fechada' ? `<button class="btn" data-u="abrir">${K.f ? 'Marcar como aberta' : 'Marcar como aberto'}</button>` : ''}<button class="link" data-u="corrigir">Corrigir quanto resta</button></div>`}
+    ${k === 'manta' && st !== 'fechada' ? `<div class="sep"></div><div class="pcs"><h4>Pedaços sobrando nesta manta</h4>
+      ${pecas(u).map((pc, i) => `<div class="pc"><span class="mono">${medida(pc)}</span><button class="link" data-u="tirar" data-i="${i}">Usei / tirar</button></div>`).join('') || '<span class="muted small">Nenhum pedaço sobrando.</span>'}
+      <form class="inline" id="fPc" novalidate><label class="field"><span>Largura (m)</span><input class="input mono" name="l" inputmode="decimal" placeholder="1,00" autocomplete="off"></label><label class="field"><span>Comprimento (m)</span><input class="input mono" name="c" inputmode="decimal" placeholder="0,60" autocomplete="off"></label><button class="btn" type="submit">Guardar pedaço</button></form></div>` : ''}`;
   const foot = st === 'acabou'
     ? `<button class="btn btn-ghost-danger" data-u="excluir">Excluir</button><button class="btn" data-u="voltar">Voltar para o estoque</button>`
     : `<button class="btn btn-ghost-danger" data-u="excluir">Excluir</button><button class="btn" data-u="acabou">${K.f ? 'Acabou esta manta' : 'Acabou este balde'}</button>`;
@@ -354,9 +369,20 @@ function dlgUnidade(id) {
     if (await write(() => store.update('unidades', u.id, { usado, aberta: usado > EPS || !!u.aberta, esgotada: v <= EPS, ...(v <= EPS ? { usadoAntes: u.usado || 0 } : {}) })))
       done(`${u.codigo}: resta ${qty(v, k)}.`);
   });
+  d.querySelector('#fPc')?.addEventListener('submit', async e => {
+    e.preventDefault();
+    const l = num(e.target.l.value), c = num(e.target.c.value);
+    if (!(l > 0 && l <= 1.2 + EPS)) return dlgErr('Largura do pedaço: entre 0,01 e 1,20 m.');
+    if (!(c > 0 && c <= u.capacidade + EPS)) return dlgErr(`Comprimento do pedaço: entre 0,01 e ${qty(u.capacidade, k)}.`);
+    if (await write(() => store.update('unidades', u.id, { pedacos: [...pecas(u), { l: r3(l), c: r3(c) }] }))) { dlgUnidade(u.id); toast(`Pedaço ${medida({ l, c })} guardado em ${u.codigo}.`); }
+  });
   d.firstElementChild.addEventListener('click', async e => {
     const a = e.target.closest('[data-u]')?.dataset.u; if (!a) return;
-    if (a === 'corrigir') { d.querySelector('#fRest').hidden = false; d.querySelector('#fRest input').select(); }
+    if (a === 'tirar') {
+      const i = +e.target.closest('[data-u]').dataset.i, pc = pecas(u)[i];
+      if (pc && await write(() => store.update('unidades', u.id, { pedacos: pecas(u).filter((_, j) => j !== i) }))) { dlgUnidade(u.id); toast(`Pedaço ${medida(pc)} saiu de ${u.codigo}.`); }
+    }
+    else if (a === 'corrigir') { d.querySelector('#fRest').hidden = false; d.querySelector('#fRest input').select(); }
     else if (a === 'abrir') { if (await write(() => store.update('unidades', u.id, { aberta: true }))) done(`${u.codigo} ${K.f ? 'aberta' : 'aberto'}.`); }
     else if (a === 'acabou') { if (await write(() => store.update('unidades', u.id, { esgotada: true, aberta: true, usadoAntes: u.usado || 0, usado: u.capacidade }))) done(`${u.codigo} saiu do estoque.`); }
     else if (a === 'voltar') { if (await write(() => store.update('unidades', u.id, { esgotada: false, usado: Math.min(u.usadoAntes || 0, r3(u.capacidade - 0.01)) }))) done(`${u.codigo} voltou para o estoque.`); }
@@ -376,7 +402,7 @@ function dlgAdicionar(pid) {
     body: `<form id="fAdd" novalidate class="dlg-form" style="display:flex;flex-direction:column;gap:12px">
       <div class="grid2"><label class="field"><span>Quantidade</span><input class="input mono" name="qtd" inputmode="numeric" value="1"></label>
       <label class="field"><span>${K.capLabel}</span><input class="input mono" name="cap" inputmode="decimal" value="${f2(p.capPadrao || K.capDef)}"></label></div>
-      <label class="field"><span>Data de entrada</span><input class="input" type="date" name="data" value="${new Date().toISOString().slice(0, 10)}"></label>
+      <label class="field"><span>Data de entrada</span><input class="input" type="date" name="data" value="${new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10)}"></label>
       <small class="muted">Cada ${K.um} recebe um código (${K.prefix}-001, ${K.prefix}-002…). Escreva o código na etiqueta.</small></form>`,
     foot: `<button class="btn" data-close>Cancelar</button><button class="btn btn-primary" form="fAdd" type="submit">Adicionar</button>`,
     onOpen: d => d.querySelector('[name=qtd]').select(),
@@ -479,7 +505,12 @@ function pageProduto(id) {
   const ord = { aberta: 0, fechada: 1 };
   ativos.sort((a, b) => ord[estado(a)] - ord[estado(b)] || String(a.codigo).localeCompare(String(b.codigo)));
   const ab = ativos.filter(u => estado(u) === 'aberta'), fe = ativos.length - ab.length;
-  const card = u => { const st = estado(u), rest = restante(u); return `<button class="unit${st === 'acabou' ? ' done' : ''}" data-unit="${u.id}" style="--c:${c}">${unitIcon(k, p.cor, rest / u.capacidade, st)}<span class="code">${esc(u.codigo)}</span>${pill(k, st)}<span class="sub">${st === 'aberta' ? `resta ${qty(rest, k)}` : st === 'fechada' ? qty(u.capacidade, k) : 'fora do estoque'}</span></button>`; };
+  const card = u => {
+    const st = estado(u), rest = restante(u), n = pecas(u).length;
+    const info = st === 'aberta' ? `<span class="sub">usou <b>${qty(u.usado || 0, k)}</b></span><span class="sub">resta ${qty(rest, k)}</span>`
+      : st === 'fechada' ? `<span class="sub">${qty(u.capacidade, k)} · 100%</span>` : '<span class="sub">fora do estoque</span>';
+    return `<button class="unit${st === 'acabou' ? ' done' : ''}" data-unit="${u.id}" style="--c:${c}">${unitIcon(k, p.cor, rest / u.capacidade, st)}<span class="code">${esc(u.codigo)}</span>${pill(k, st)}${info}${n ? `<span class="pcs-tag">${n} pedaço${n > 1 ? 's' : ''} sobrando</span>` : ''}</button>`;
+  };
   return `<div class="page">${notice()}
     <div class="ph" style="--c:${c}"><a class="back" href="#${K.tab}" aria-label="Voltar">${backIcon}</a><h1>${esc(p.nome)}</h1><div class="acts"><button class="btn" data-act="editar" data-id="${id}">Editar</button></div></div>
     <div class="summary"><span class="pill ok">${ativos.length} em estoque</span>${fe ? `<span class="pill closed">${fe} ${word(k, 'fechada').toLowerCase()}${fe > 1 ? 's' : ''}</span>` : ''}${ab.length ? `<span class="pill hot">${ab.length} ${word(k, 'aberta').toLowerCase()}${ab.length > 1 ? 's' : ''}</span>` : ''}</div>
