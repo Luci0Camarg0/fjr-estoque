@@ -87,8 +87,16 @@ main{padding-block:24px 90px}
 .pcs-tag{font-size:.75rem;font-weight:500;color:var(--warn);background:var(--warn-bg);border-radius:6px;padding:1px 8px}
 .pcs{display:flex;flex-direction:column;gap:8px}
 .pcs h4{margin:0;font-size:.9rem}
-.pcs .inline{flex-wrap:wrap}
-.pcs .inline .field{min-width:110px}
+.pcs summary{cursor:pointer;color:var(--muted)}
+.dims{display:flex;align-items:center;gap:6px}
+.dims .input{width:84px}
+.dims b{color:var(--muted);font-weight:400}
+#fCorte{flex-wrap:wrap}
+svg.dw{width:100%;height:auto;display:block}
+svg.dw text{font:600 12px var(--f-mono);fill:#fff;paint-order:stroke;stroke:rgba(0,0,0,.7);stroke-width:3px;text-anchor:middle;dominant-baseline:middle}
+svg.dw text.soft{fill:rgba(255,255,255,.85);font-weight:500}
+svg.dw text.axis{fill:var(--muted);stroke:none;font-weight:500;font-size:11px}
+.order{display:flex;align-items:end;gap:10px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
 .pc{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:7px 10px}
 .unit.done{opacity:.5}
 .unit.add{border-style:dashed;background:transparent;color:var(--muted);justify-content:center;min-height:190px}
@@ -133,7 +141,7 @@ input[type=color].input{padding:3px;height:38px;cursor:pointer}
 .empty b{color:var(--ink);font-size:1rem}
 
 /* modal e aviso */
-dialog{border:1px solid var(--line);border-radius:14px;padding:0;background:var(--surface);color:var(--ink);width:min(440px,calc(100vw - 32px));max-height:calc(100vh - 48px);box-shadow:0 20px 60px rgba(0,0,0,.6)}
+dialog{border:1px solid var(--line);border-radius:14px;padding:0;background:var(--surface);color:var(--ink);width:min(500px,calc(100vw - 32px));max-height:calc(100vh - 48px);box-shadow:0 20px 60px rgba(0,0,0,.6)}
 dialog::backdrop{background:rgba(0,0,0,.65)}
 dialog .box{display:flex;flex-direction:column;max-height:calc(100vh - 50px)}
 dialog header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line)}
@@ -209,9 +217,7 @@ const qty = (n, k) => `${f2(n)} ${KIND[k].un}`;
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 const fDate = iso => iso ? new Date(iso).toLocaleDateString('pt-BR') : '—';
 const prodById = id => S.produtos.find(p => p.id === id);
-const restante = u => r3(u.capacidade - (u.usado || 0));
-const pecas = u => Array.isArray(u.pedacos) ? u.pedacos : [];
-const medida = pc => `${f2(pc.l)} × ${f2(pc.c)} m`;
+const restante = u => r3(u.capacidade - ((u.tipo || 'manta') === 'manta' ? fimCortes(cortesOf(u)) : (u.usado || 0)));
 const estado = u => u.esgotada ? 'acabou' : (u.aberta || (u.usado || 0) > EPS) ? 'aberta' : 'fechada';
 const word = (k, st) => ({ fechada: KIND[k].f ? 'Lacrada' : 'Lacrado', aberta: KIND[k].f ? 'Aberta' : 'Aberto', acabou: 'Acabou' })[st];
 const pill = (k, st) => `<span class="pill ${st === 'aberta' ? 'hot' : st === 'fechada' ? 'closed' : ''}">${word(k, st)}</span>`;
@@ -251,6 +257,88 @@ function bucketIcon(cor, ratio = 1, st = 'fechada') {
 let svgN = 0;
 const unitIcon = (tipo, cor, ratio, st) => tipo === 'tinta' ? bucketIcon(cor, ratio, st) : rollIcon(cor, ratio, st);
 const foto = p => p?.foto ? `<img src="${esc(p.foto)}" alt="${esc(p.nome)}" loading="lazy">` : unitIcon(p?.tipo, p?.cor, 1, 'fechada');
+
+/* ---------- cortes da manta ----------
+   Cada corte é um retângulo no rolo: x/w atravessam a largura (1,20 m), y/h correm pelo comprimento.
+   Medidas aparecem como comprimento × largura, do jeito que a fábrica fala ("2 metros por 60"). */
+const LARG = 1.2, SOBRA_UTIL = 0.4, MIN_PECA = 0.05;
+const largura = u => u.largura || LARG;
+function cortesOf(u) {
+  if (Array.isArray(u.cortes)) return u.cortes;
+  return (u.usado || 0) > EPS ? [{ x: 0, y: 0, w: largura(u), h: u.usado }] : []; // lançamento antigo: metros corridos na largura toda
+}
+function fimCortes(cs) { return r3(cs.reduce((m, c) => Math.max(m, c.y + c.h), 0)); }
+const medida = r => `${f2(r.h)} × ${f2(r.w)} m`;
+const hit = (a, b) => a.x < b.x + b.w - EPS && b.x < a.x + a.w - EPS && a.y < b.y + b.h - EPS && b.y < a.y + a.h - EPS;
+const inside = (a, b) => a.x >= b.x - EPS && a.y >= b.y - EPS && a.x + a.w <= b.x + b.w + EPS && a.y + a.h <= b.y + b.h + EPS;
+const big = r => r.w > EPS && r.h > EPS;
+/* Partes de f fora de c, cada uma ocupando o máximo possível (podem se sobrepor). */
+function minusMax(f, c) {
+  if (!hit(f, c)) return [f];
+  return [{ x: f.x, y: f.y, w: c.x - f.x, h: f.h }, { x: c.x + c.w, y: f.y, w: f.x + f.w - c.x - c.w, h: f.h },
+    { x: f.x, y: f.y, w: f.w, h: c.y - f.y }, { x: f.x, y: c.y + c.h, w: f.w, h: f.y + f.h - c.y - c.h }].filter(big);
+}
+/* Partes de f fora de c, sem sobreposição. */
+function minusCut(f, c) {
+  if (!hit(f, c)) return [f];
+  const x0 = Math.max(f.x, c.x), x1 = Math.min(f.x + f.w, c.x + c.w);
+  return [{ x: f.x, y: f.y, w: x0 - f.x, h: f.h }, { x: x1, y: f.y, w: f.x + f.w - x1, h: f.h },
+    { x: x0, y: f.y, w: x1 - x0, h: c.y - f.y }, { x: x0, y: c.y + c.h, w: x1 - x0, h: f.y + f.h - c.y - c.h }].filter(big);
+}
+const prune = rs => rs.filter((r, i) => !rs.some((o, j) => j !== i && inside(r, o) && (!inside(o, r) || j < i)));
+/* Maiores espaços livres do rolo: é com eles que se vê se um tapete ainda cabe. */
+function livresDe(W, L, cs) {
+  let free = [{ x: 0, y: 0, w: W, h: L }];
+  for (const c of cs) free = prune(free.flatMap(f => minusMax(f, c)));
+  return free;
+}
+/* Pedaços sobrando na parte já cortada do rolo (depois dela o rolo segue inteiro). */
+function sobrasDe(W, L, cs) {
+  const fim = fimCortes(cs);
+  let rs = livresDe(W, L, cs).map(f => ({ ...f, h: Math.min(f.y + f.h, fim) - f.y })).filter(big);
+  const out = [];
+  while (rs.length) {
+    rs.sort((a, b) => b.w * b.h - a.w * a.h);
+    const p = rs.shift(); out.push(p);
+    rs = rs.flatMap(r => minusCut(r, p));
+  }
+  return out.filter(r => r.w >= MIN_PECA - EPS && r.h >= MIN_PECA - EPS).map(r => ({ x: r3(r.x), y: r3(r.y), w: r3(r.w), h: r3(r.h) }));
+}
+const sobras = u => sobrasDe(largura(u), u.capacidade, cortesOf(u));
+/* Onde cortar um tapete a × b (pode girar). Prioridade: caber numa sobra sem avançar no rolo;
+   não deixar uma tira fina demais para outro tapete; avançar o mínimo no rolo. */
+function encaixes(u, a, b) {
+  const cs = cortesOf(u), fim = fimCortes(cs), list = [];
+  for (const f of livresDe(largura(u), u.capacidade, cs)) for (const [w, h] of a === b ? [[a, b]] : [[a, b], [b, a]]) {
+    if (w > f.w + EPS || h > f.h + EPS) continue;
+    const gasto = r3(Math.max(fim, f.y + h) - fim), resto = f.w - w;
+    list.push({ x: r3(f.x), y: r3(f.y), w, h, gasto, key: [gasto > EPS ? 1 : 0, resto > EPS && resto < SOBRA_UTIL ? 1 : 0, gasto, f.y, f.x] });
+  }
+  return list.sort((p, q) => cmpKey(p.key, q.key));
+}
+function cmpKey(a, b) { for (let i = 0; i < a.length; i++) { const d = a[i] - b[i]; if (Math.abs(d) > EPS) return d; } return 0; }
+/* Desenho da manta deitada, como no papel: comprimento para a direita, largura para baixo. */
+function desenho(u, cor, novo) {
+  const W = largura(u), L = u.capacidade, cs = novo ? [...cortesOf(u), novo] : cortesOf(u), fim = fimCortes(cs);
+  const pad = 24, AW = 392;
+  const s = Math.min(AW / Math.max(fim * 1.3, 0.6), 150 / W), D = Math.min(L, AW / s), PW = D * s, PH = W * s;
+  const X = v => (pad + v * s).toFixed(1), Y = v => (pad + v * s).toFixed(1);
+  const box = (r, attrs) => `<rect x="${X(r.y)}" y="${Y(r.x)}" width="${(Math.min(r.h, D - r.y) * s).toFixed(1)}" height="${(r.w * s).toFixed(1)}" ${attrs}/>`;
+  const lbl = (r, t, cls = '') => Math.min(r.h, D - r.y) * s >= t.length * 7.2 + 6 && r.w * s >= 18 ? `<text x="${X(r.y + Math.min(r.h, D - r.y) / 2)}" y="${Y(r.x + r.w / 2)}" class="${cls}">${t}</text>` : '';
+  const id = 'h' + (++svgN), sb = sobrasDe(W, L, cs);
+  const resto = { x: 0, y: fim, w: W, h: L - fim };
+  return `<svg class="dw" viewBox="0 0 ${AW + 2 * pad} ${(PH + 2 * pad).toFixed(0)}" role="img" aria-label="Desenho dos cortes da manta">
+    <defs><pattern id="${id}" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="#0b0d12"/><line x1="0" y1="0" x2="0" y2="8" stroke="#3a4150" stroke-width="3"/></pattern></defs>
+    <rect x="${pad}" y="${pad}" width="${PW.toFixed(1)}" height="${PH.toFixed(1)}" rx="2" style="fill:${shade(cor, .85)}"/>
+    ${cortesOf(u).map(c => box(c, `fill="url(#${id})" stroke="#000" stroke-width="1"`)).join('')}
+    ${sb.map(r => box(r, 'fill="none" stroke="#fff" stroke-width="1.5" stroke-dasharray="5 4"') + lbl(r, medida(r).slice(0, -2))).join('')}
+    ${novo ? box(novo, 'fill="rgba(242,85,44,.88)" stroke="#fff" stroke-width="2"') + lbl(novo, medida(novo).slice(0, -2)) : ''}
+    ${resto.h > EPS ? lbl(resto, `rolo inteiro ${f2(resto.h)} m`, 'soft') : ''}
+    ${D < L - EPS ? `<path d="M${X(D) - 0} ${pad} l-6 ${(PH / 4).toFixed(1)} l6 ${(PH / 4).toFixed(1)} l-6 ${(PH / 4).toFixed(1)} l6 ${(PH / 4).toFixed(1)}" fill="none" stroke="#050608" stroke-width="3"/>` : ''}
+    ${fim > EPS ? `<line x1="${X(fim)}" y1="${pad - 6}" x2="${X(fim)}" y2="${(pad + PH + 6).toFixed(1)}" stroke="#F1F3F7" stroke-width="1" stroke-dasharray="2 3"/><text x="${X(fim)}" y="${pad - 11}" class="axis">${f2(fim)} m</text>` : ''}
+    <text x="${pad - 9}" y="${(pad + PH / 2).toFixed(1)}" class="axis" transform="rotate(-90 ${pad - 9} ${(pad + PH / 2).toFixed(1)})">${f2(W)} m</text>
+  </svg>`;
+}
 
 function toast(msg, kind) {
   const t = $('#toast'); t.textContent = msg; t.className = 'show' + (kind ? ' ' + kind : '');
@@ -334,19 +422,24 @@ $('#dlg').addEventListener('click', e => { if (e.target === $('#dlg')) $('#dlg')
 function dlgUnidade(id) {
   const u = S.unidades.find(x => x.id === id); if (!u) return;
   const p = prodById(u.produtoId), k = p?.tipo || 'manta', K = KIND[k], st = estado(u), rest = restante(u);
+  const manta = k === 'manta', cs = manta ? cortesOf(u) : [], sb = manta ? sobras(u) : [];
+  const mantaBody = () => `<div class="sep"></div>
+    ${cs.length ? desenho(u, p?.cor) : ''}
+    ${sb.length ? `<div class="pcs"><h4>Pedaços sobrando</h4>${sb.map(r => `<div class="pc"><span class="mono">${medida(r)}</span><span class="muted small">comprimento × largura</span></div>`).join('')}</div>` : ''}
+    ${st === 'acabou' ? '' : `<form class="inline" id="fCorte" novalidate>${dimsField('Cortar um tapete desta manta')}<button class="btn btn-primary" type="submit">Ver onde cortar</button></form>`}
+    ${cs.length ? `<details class="pcs"><summary class="small">Cortes feitos (${cs.length})</summary>${cs.map((c, i) => `<div class="pc"><span class="mono">${medida(c)}</span><span class="muted small">${c.data ? fDate(c.data) : ''}</span>${st === 'acabou' ? '' : `<button class="link" data-u="desfazer" data-i="${i}">Desfazer</button>`}</div>`).join('')}</details>` : ''}
+    ${st === 'fechada' ? `<div class="row"><button class="btn" data-u="abrir">Marcar como aberta</button></div>` : ''}`;
+  const tintaBody = () => `<div class="sep"></div>
+    <form class="inline" id="fUso" novalidate><label class="field"><span>Usei quanto? (${K.un})</span><input class="input mono" name="v" inputmode="decimal" placeholder="2,00" autocomplete="off"></label><button class="btn btn-primary" type="submit">Registrar uso</button></form>
+    <form class="inline" id="fRest" novalidate hidden><label class="field"><span>Quanto resta? (${K.un})</span><input class="input mono" name="v" inputmode="decimal" value="${f2(rest)}" autocomplete="off"></label><button class="btn" type="submit">Salvar</button></form>
+    <div class="row">${st === 'fechada' ? `<button class="btn" data-u="abrir">Marcar como aberto</button>` : ''}<button class="link" data-u="corrigir">Corrigir quanto resta</button></div>`;
   const body = `<div class="big" style="--c:${labelColor(p?.cor)}">${unitIcon(k, p?.cor, rest / u.capacidade, st)}<div class="info">
       <div class="row">${pill(k, st)}<span class="muted small">entrada ${fDate(u.entrada)}</span></div>
-      <div class="rest">${st === 'acabou' ? 'Acabou' : st === 'fechada' ? `${K.f ? 'Lacrada' : 'Lacrado'}, 100%: ${qty(u.capacidade, k)}` : `Usou ${qty(u.usado || 0, k)} · resta ${qty(rest, k)}`}</div>
+      <div class="rest">${st === 'acabou' ? 'Acabou' : st === 'fechada' ? `${K.f ? 'Lacrada' : 'Lacrado'}, 100%: ${qty(u.capacidade, k)}` : `Usou ${qty(u.capacidade - rest, k)} · resta ${qty(rest, k)}`}</div>
       <span class="bar"><i style="width:${st === 'acabou' ? 0 : (rest / u.capacidade * 100).toFixed(1)}%"></i></span>
-      ${st === 'aberta' ? `<span class="muted small">de ${qty(u.capacidade, k)} do ${K.f ? 'rolo' : 'balde'}</span>` : ''}</div></div>
-    ${st === 'acabou' ? `<p class="muted small">${K.f ? 'Esta manta acabou' : 'Este balde acabou'} e não conta mais no estoque.</p>` : `
-    <div class="sep"></div>
-    <form class="inline" id="fUso" novalidate><label class="field"><span>Usei quanto? (${K.un})</span><input class="input mono" name="v" inputmode="decimal" placeholder="${k === 'manta' ? '1,50' : '2,00'}" autocomplete="off"></label><button class="btn btn-primary" type="submit">Registrar uso</button></form>
-    <form class="inline" id="fRest" novalidate hidden><label class="field"><span>Quanto resta? (${K.un})</span><input class="input mono" name="v" inputmode="decimal" value="${f2(rest)}" autocomplete="off"></label><button class="btn" type="submit">Salvar</button></form>
-    <div class="row">${st === 'fechada' ? `<button class="btn" data-u="abrir">${K.f ? 'Marcar como aberta' : 'Marcar como aberto'}</button>` : ''}<button class="link" data-u="corrigir">Corrigir quanto resta</button></div>`}
-    ${k === 'manta' && st !== 'fechada' ? `<div class="sep"></div><div class="pcs"><h4>Pedaços sobrando nesta manta</h4>
-      ${pecas(u).map((pc, i) => `<div class="pc"><span class="mono">${medida(pc)}</span><button class="link" data-u="tirar" data-i="${i}">Usei / tirar</button></div>`).join('') || '<span class="muted small">Nenhum pedaço sobrando.</span>'}
-      <form class="inline" id="fPc" novalidate><label class="field"><span>Largura (m)</span><input class="input mono" name="l" inputmode="decimal" placeholder="1,00" autocomplete="off"></label><label class="field"><span>Comprimento (m)</span><input class="input mono" name="c" inputmode="decimal" placeholder="0,60" autocomplete="off"></label><button class="btn" type="submit">Guardar pedaço</button></form></div>` : ''}`;
+      ${st === 'aberta' ? `<span class="muted small">${manta ? `resta ${qty(rest, k)} de rolo inteiro${sb.length ? ` + ${sb.length} pedaço${sb.length > 1 ? 's' : ''} sobrando` : ''}` : `de ${qty(u.capacidade, k)} do balde`}</span>` : ''}</div></div>
+    ${st === 'acabou' ? `<p class="muted small">${K.f ? 'Esta manta acabou' : 'Este balde acabou'} e não conta mais no estoque.</p>` : ''}
+    ${manta ? mantaBody() : st === 'acabou' ? '' : tintaBody()}`;
   const foot = st === 'acabou'
     ? `<button class="btn btn-ghost-danger" data-u="excluir">Excluir</button><button class="btn" data-u="voltar">Voltar para o estoque</button>`
     : `<button class="btn btn-ghost-danger" data-u="excluir">Excluir</button><button class="btn" data-u="acabou">${K.f ? 'Acabou esta manta' : 'Acabou este balde'}</button>`;
@@ -369,18 +462,18 @@ function dlgUnidade(id) {
     if (await write(() => store.update('unidades', u.id, { usado, aberta: usado > EPS || !!u.aberta, esgotada: v <= EPS, ...(v <= EPS ? { usadoAntes: u.usado || 0 } : {}) })))
       done(`${u.codigo}: resta ${qty(v, k)}.`);
   });
-  d.querySelector('#fPc')?.addEventListener('submit', async e => {
+  d.querySelector('#fCorte')?.addEventListener('submit', e => {
     e.preventDefault();
-    const l = num(e.target.l.value), c = num(e.target.c.value);
-    if (!(l > 0 && l <= 1.2 + EPS)) return dlgErr('Largura do pedaço: entre 0,01 e 1,20 m.');
-    if (!(c > 0 && c <= u.capacidade + EPS)) return dlgErr(`Comprimento do pedaço: entre 0,01 e ${qty(u.capacidade, k)}.`);
-    if (await write(() => store.update('unidades', u.id, { pedacos: [...pecas(u), { l: r3(l), c: r3(c) }] }))) { dlgUnidade(u.id); toast(`Pedaço ${medida({ l, c })} guardado em ${u.codigo}.`); }
+    const m = lerDims(e.target); if (!m) return dlgErr(DIMS_ERR);
+    dlgCorte(p.id, m[0], m[1], u.id);
   });
   d.firstElementChild.addEventListener('click', async e => {
     const a = e.target.closest('[data-u]')?.dataset.u; if (!a) return;
-    if (a === 'tirar') {
-      const i = +e.target.closest('[data-u]').dataset.i, pc = pecas(u)[i];
-      if (pc && await write(() => store.update('unidades', u.id, { pedacos: pecas(u).filter((_, j) => j !== i) }))) { dlgUnidade(u.id); toast(`Pedaço ${medida(pc)} saiu de ${u.codigo}.`); }
+    if (a === 'desfazer') {
+      const b = e.target.closest('[data-u]'), i = +b.dataset.i, c = cs[i];
+      if (!b.dataset.sure) { b.dataset.sure = '1'; b.textContent = 'Confirmar'; return; }
+      const novos = cs.filter((_, j) => j !== i);
+      if (c && await write(() => store.update('unidades', u.id, { cortes: novos, usado: fimCortes(novos), aberta: true, esgotada: false }))) { dlgUnidade(u.id); toast(`Corte ${medida(c)} desfeito.`); }
     }
     else if (a === 'corrigir') { d.querySelector('#fRest').hidden = false; d.querySelector('#fRest input').select(); }
     else if (a === 'abrir') { if (await write(() => store.update('unidades', u.id, { aberta: true }))) done(`${u.codigo} ${K.f ? 'aberta' : 'aberto'}.`); }
@@ -393,6 +486,59 @@ function dlgUnidade(id) {
     }
   });
 }
+
+const DIMS_ERR = 'Digite as duas medidas do tapete, em metros. Ex.: 1,00 × 0,60.';
+const dimsField = (label, a = '', b = '') => `<label class="field"><span>${label}</span><span class="dims"><input class="input mono" name="a" inputmode="decimal" placeholder="1,00" value="${a}" autocomplete="off" aria-label="Comprimento (m)"><b>×</b><input class="input mono" name="b" inputmode="decimal" placeholder="0,60" value="${b}" autocomplete="off" aria-label="Largura (m)"><span class="muted">m</span></span></label>`;
+function lerDims(f) { const a = num(f.a.value), b = num(f.b.value); return a > 0 && b > 0 && a <= 100 && b <= 100 ? [r3(a), r3(b)] : null; }
+
+/* Corte de um tapete: acha a melhor manta da cor e o lugar dentro dela, mostra no desenho e registra. */
+function dlgCorte(pid, a, b, prefId) {
+  const p = prodById(pid); if (!p) return;
+  const tam = `${f2(a)} × ${f2(b)} m`;
+  const opts = unitsOf(pid).filter(u => !u.esgotada).map(u => {
+    const list = encaixes(u, a, b); if (!list.length) return null;
+    const fit = list[0], alt = list.find(c => Math.abs(c.w - fit.w) > EPS);
+    return { u, fit, alt, key: [...fit.key.slice(0, 2), estado(u) === 'fechada' ? 1 : 0, fit.gasto, restante(u)] };
+  }).filter(Boolean).sort((x, y) => cmpKey(x.key, y.key) || String(x.u.codigo).localeCompare(String(y.u.codigo)));
+  if (!opts.length) {
+    const largo = Math.min(a, b) > LARG + EPS;
+    modal({ title: `Cortar ${tam}`, body: `<p>${largo ? `Esse tapete é mais largo que a manta (${f2(LARG)} m) nos dois lados, então não sai de um rolo só.` : `Não cabe em nenhuma ${esc(p.nome)} em estoque.`}</p>`,
+      foot: `<button class="btn" data-close>Fechar</button>${largo ? '' : `<button class="btn btn-primary" data-close data-addunit="${pid}">Adicionar manta</button>`}` });
+    return;
+  }
+  let sel = opts.find(o => o.u.id === prefId) || opts[0], girado = false;
+  const naoCabe = prefId && sel.u.id !== prefId ? S.unidades.find(x => x.id === prefId)?.codigo : null;
+  const d = modal({
+    title: `Cortar ${tam} · ${esc(p.nome)}`,
+    body: `${naoCabe ? `<div class="notice">Não cabe na ${esc(naoCabe)}. Veja a melhor opção abaixo.</div>` : ''}
+      ${opts.length > 1 ? `<label class="field"><span>Manta</span><select class="input" id="cutU">${opts.map(o => `<option value="${o.u.id}"${o === sel ? ' selected' : ''}>${esc(o.u.codigo)} · ${word('manta', estado(o.u))} · ${o.fit.gasto > EPS ? `avança ${f2(o.fit.gasto)} m no rolo` : 'sai da sobra'}</option>`).join('')}</select></label>` : ''}
+      <div id="cutView"></div>`,
+    foot: `<button class="btn" data-close>Cancelar</button><button class="btn btn-primary" data-c="ok">Confirmar corte</button>`,
+  });
+  const view = () => {
+    const f = girado && sel.alt ? sel.alt : sel.fit, cod = esc(sel.u.codigo);
+    const onde = f.gasto <= EPS ? `Sai de um pedaço que sobrou na <b>${cod}</b>, sem avançar no rolo.`
+      : estado(sel.u) === 'fechada' ? `Abre a <b>${cod}</b> (lacrada) e usa ${f2(f.gasto)} m do rolo.` : `Usa mais ${f2(f.gasto)} m do rolo da <b>${cod}</b>.`;
+    const marca = f.x <= EPS && f.y <= EPS ? 'No começo do rolo, encostado na borda.'
+      : `${f.y <= EPS ? 'No começo do rolo' : `Marque a ${f2(f.y)} m do começo do rolo`}${f.x > EPS ? `, a ${f2(f.x)} m da borda` : ', encostado na borda'}.`;
+    d.querySelector('#cutView').innerHTML = `<p>${onde}</p>${desenho(sel.u, p.cor, f)}
+      <p class="small"><span class="pill hot">tapete ${medida(f)}</span> ${marca}</p>
+      ${sel.alt ? `<button type="button" class="link" data-c="girar">Girar o tapete</button>` : ''}`;
+  };
+  view();
+  d.querySelector('#cutU')?.addEventListener('change', e => { sel = opts.find(o => o.u.id === e.target.value) || sel; girado = false; view(); });
+  d.firstElementChild.addEventListener('click', async e => {
+    const c = e.target.closest('[data-c]')?.dataset.c; if (!c) return;
+    if (c === 'girar') { girado = !girado; view(); return; }
+    const f = girado && sel.alt ? sel.alt : sel.fit, u = sel.u;
+    const novos = [...cortesOf(u), { x: f.x, y: f.y, w: f.w, h: f.h, data: new Date().toISOString() }], fim = fimCortes(novos);
+    const acabou = fim >= u.capacidade - EPS && !sobrasDe(largura(u), u.capacidade, novos).length;
+    if (await write(() => store.update('unidades', u.id, { cortes: novos, usado: fim, aberta: true, esgotada: acabou, ...(acabou ? { usadoAntes: fim } : {}) }))) {
+      d.close(); toast(`Corte ${medida(f)} registrado na ${u.codigo}.${acabou ? ' A manta acabou.' : ''}`);
+    }
+  });
+}
+document.addEventListener('click', e => { const b = e.target.closest('[data-addunit]'); if (b) setTimeout(() => dlgAdicionar(b.dataset.addunit)); });
 
 function dlgAdicionar(pid) {
   const p = prodById(pid); if (!p) return;
@@ -506,14 +652,15 @@ function pageProduto(id) {
   ativos.sort((a, b) => ord[estado(a)] - ord[estado(b)] || String(a.codigo).localeCompare(String(b.codigo)));
   const ab = ativos.filter(u => estado(u) === 'aberta'), fe = ativos.length - ab.length;
   const card = u => {
-    const st = estado(u), rest = restante(u), n = pecas(u).length;
-    const info = st === 'aberta' ? `<span class="sub">usou <b>${qty(u.usado || 0, k)}</b></span><span class="sub">resta ${qty(rest, k)}</span>`
+    const st = estado(u), rest = restante(u), n = k === 'manta' && st !== 'acabou' ? sobras(u).length : 0;
+    const info = st === 'aberta' ? `<span class="sub">usou <b>${qty(u.capacidade - rest, k)}</b></span><span class="sub">resta ${qty(rest, k)}</span>`
       : st === 'fechada' ? `<span class="sub">${qty(u.capacidade, k)} · 100%</span>` : '<span class="sub">fora do estoque</span>';
     return `<button class="unit${st === 'acabou' ? ' done' : ''}" data-unit="${u.id}" style="--c:${c}">${unitIcon(k, p.cor, rest / u.capacidade, st)}<span class="code">${esc(u.codigo)}</span>${pill(k, st)}${info}${n ? `<span class="pcs-tag">${n} pedaço${n > 1 ? 's' : ''} sobrando</span>` : ''}</button>`;
   };
   return `<div class="page">${notice()}
     <div class="ph" style="--c:${c}"><a class="back" href="#${K.tab}" aria-label="Voltar">${backIcon}</a><h1>${esc(p.nome)}</h1><div class="acts"><button class="btn" data-act="editar" data-id="${id}">Editar</button></div></div>
     <div class="summary"><span class="pill ok">${ativos.length} em estoque</span>${fe ? `<span class="pill closed">${fe} ${word(k, 'fechada').toLowerCase()}${fe > 1 ? 's' : ''}</span>` : ''}${ab.length ? `<span class="pill hot">${ab.length} ${word(k, 'aberta').toLowerCase()}${ab.length > 1 ? 's' : ''}</span>` : ''}</div>
+    ${k === 'manta' && ativos.length ? `<form class="order" id="fPedido" novalidate>${dimsField('Novo tapete: o site acha a melhor manta e onde cortar')}<button class="btn btn-primary" type="submit">Ver onde cortar</button></form>` : ''}
     <div class="units">${ativos.map(card).join('')}<button class="unit add" data-act="adicionar" data-id="${id}"><b>+</b>Adicionar ${K.um}</button></div>
     ${acabados.length ? `<div><button class="link" data-act="acabadas">${S.ui.acabadas ? 'Esconder' : 'Mostrar'} ${acabados.length} que acabar${acabados.length > 1 ? 'am' : 'ou'}</button></div>${S.ui.acabadas ? `<div class="units">${acabados.map(card).join('')}</div>` : ''}` : ''}
   </div>`;
@@ -541,10 +688,19 @@ function render(force) {
   if (!ready()) { el.innerHTML = '<div class="loading">Carregando…</div>'; return; }
   const ae = document.activeElement;
   if (!force && ae && el.contains(ae) && ae.id === 'q') { $('#list').innerHTML = listaHtml(r.tipo); return; }
+  const fp = $('#fPedido'), keep = fp && [fp.a.value, fp.b.value, fp.contains(ae) ? ae.name : null];
   el.innerHTML = r.page === 'produto' ? pageProduto(r.id) : pageLista(r.tipo);
+  const np = $('#fPedido');
+  if (keep && np) { np.a.value = keep[0]; np.b.value = keep[1]; if (keep[2]) np[keep[2]].focus(); }
 }
 
 /* ---------- eventos ---------- */
+document.addEventListener('submit', e => {
+  if (e.target.id !== 'fPedido') return;
+  e.preventDefault();
+  const m = lerDims(e.target); if (!m) return toast(DIMS_ERR, 'bad');
+  dlgCorte(S.route.id, m[0], m[1]);
+});
 document.addEventListener('input', e => { if (e.target.id === 'q') { S.ui.q[S.route.tipo] = e.target.value; $('#list').innerHTML = listaHtml(S.route.tipo); } });
 document.addEventListener('click', e => {
   const t = e.target;
