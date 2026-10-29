@@ -1,16 +1,10 @@
-// Configuração do banco de dados (Firebase).
-// Enquanto estiver null, o site funciona em modo demonstração: os dados ficam só no navegador de quem usa.
-// Para a equipe toda ver o mesmo estoque, cole aqui o objeto firebaseConfig do seu projeto
-// (Console do Firebase > Configurações do projeto > Seus apps > App da Web). Veja o LEIAME.md.
-window.FJR_FIREBASE = null;
-
-/* Exemplo:
+// Configuração do banco de dados (Firebase, projeto fjr-estoque).
+// Não é senha: identifica o projeto e foi feita para ficar no site. Quem pode ler e alterar é definido em firestore.rules.
 window.FJR_FIREBASE = {
-  apiKey: "AIza...",
+  apiKey: "AIzaSyClXzEYgFiBeqGKp8yfAVmk1qnNx6SuDe8",
   authDomain: "fjr-estoque.firebaseapp.com",
   projectId: "fjr-estoque",
-  storageBucket: "fjr-estoque.appspot.com",
-  messagingSenderId: "000000000000",
-  appId: "1:000000000000:web:abcdef"
+  storageBucket: "fjr-estoque.firebasestorage.app",
+  messagingSenderId: "186412388780",
+  appId: "1:186412388780:web:55b0b8b2e9d744dfec2a09"
 };
-*/

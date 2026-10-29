@@ -48,7 +48,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .nav[aria-current="page"]{color:var(--ink);background:var(--surface-2);box-shadow:inset 0 -2px 0 var(--accent)}
 .mode{display:flex;align-items:center;gap:7px;white-space:nowrap;font-size:.82rem;color:var(--muted)}
 .dot{width:7px;height:7px;border-radius:50%;background:var(--muted);display:inline-block;flex:none}
-.dot.on{background:var(--ok)}.dot.local{background:var(--warn)}
+.dot.on{background:var(--ok)}.dot.bad{background:var(--bad)}
 main{padding-block:24px 90px}
 .page{display:flex;flex-direction:column;gap:18px}
 .notice{background:var(--warn-bg);color:var(--warn);border:1px solid rgba(233,176,79,.25);border-radius:10px;padding:9px 12px;font-size:.86rem}
@@ -374,21 +374,6 @@ async function firebaseStore(conf) {
     del: (col, id) => fs.deleteDoc(fs.doc(db, col, id)),
   };
 }
-function localStore() {
-  const KEY = 'fjr-estoque-v2';
-  let data = {};
-  try { data = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { data = {}; }
-  const subs = {};
-  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) { toast('O navegador não deixou salvar (espaço cheio?).', 'bad'); } };
-  const emit = col => { const list = Object.entries(data[col] || {}).map(([id, d]) => ({ id, ...d })); (subs[col] || []).forEach(cb => cb(list)); };
-  const clone = d => JSON.parse(JSON.stringify(d));
-  return {
-    sub(col, cb) { (subs[col] ||= []).push(cb); queueMicrotask(() => emit(col)); },
-    async set(col, id, d) { (data[col] ||= {})[id] = clone(d); save(); emit(col); },
-    async update(col, id, d) { if (!data[col]?.[id]) throw new Error('registro não encontrado'); data[col][id] = { ...data[col][id], ...clone(d) }; save(); emit(col); },
-    async del(col, id) { if (data[col]) delete data[col][id]; save(); emit(col); },
-  };
-}
 async function write(fn) {
   if (S.busy) return false;
   S.busy = true;
@@ -640,7 +625,7 @@ $('#fotoFile').addEventListener('change', async e => {
 });
 
 /* ---------- páginas ---------- */
-const notice = () => S.mode === 'local' ? '<div class="notice">Modo demonstração: os dados ficam só neste navegador. Para todo mundo ver o mesmo estoque, falta ligar o banco de dados (veja o LEIAME).</div>' : '';
+const notice = () => '';
 function stockLine(p) {
   const k = p.tipo || 'manta', us = unitsOf(p.id).filter(u => !u.esgotada);
   if (!us.length) return '<i class="dot"></i>Sem estoque';
@@ -707,8 +692,9 @@ function scheduleRender() { if (tmr) return; tmr = setTimeout(() => { tmr = 0; i
 function render(force) {
   const r = S.route, tipo = r.page === 'produto' ? (prodById(r.id)?.tipo || 'manta') : r.tipo;
   document.querySelectorAll('.navs .nav').forEach(a => { if (a.dataset.nav === tipo) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
-  $('#mode').innerHTML = S.mode === 'firebase' ? '<i class="dot on"></i><span>Online</span>' : S.mode === 'local' ? '<i class="dot local"></i><span>Demonstração</span>' : '<i class="dot"></i><span>Conectando…</span>';
+  $('#mode').innerHTML = S.mode === 'firebase' ? '<i class="dot on"></i><span>Online</span>' : S.mode === 'erro' ? '<i class="dot bad"></i><span>Sem conexão</span>' : '<i class="dot"></i><span>Conectando…</span>';
   const el = $('#app');
+  if (S.mode === 'erro') { el.innerHTML = `<div class="page"><div class="empty"><b>Sem conexão com o estoque</b><p>${esc(S.erro)}</p><button class="btn btn-primary" onclick="location.reload()">Tentar de novo</button></div></div>`; return; }
   if (!ready()) { el.innerHTML = '<div class="loading">Carregando…</div>'; return; }
   const ae = document.activeElement;
   if (!force && ae && el.contains(ae) && ae.id === 'q') { $('#list').innerHTML = listaHtml(r.tipo); return; }
@@ -751,13 +737,14 @@ document.addEventListener('click', e => {
 });
 
 /* ---------- início ---------- */
+/* Sem banco de dados não há estoque: avisa em vez de guardar dados só neste aparelho. */
+function semConexao(msg) { S.mode = 'erro'; S.erro = msg; render(true); }
 async function boot() {
   S.route = parse(location.hash.slice(1)); render(true);
   const conf = window.FJR_FIREBASE;
-  if (conf && conf.apiKey) {
-    try { store = await firebaseStore(conf); S.mode = 'firebase'; }
-    catch (e) { console.error(e); store = localStore(); S.mode = 'local'; toast('Não foi possível conectar ao banco de dados. Usando modo demonstração.', 'bad'); }
-  } else { store = localStore(); S.mode = 'local'; }
+  if (!conf || !conf.apiKey) return semConexao('O banco de dados ainda não foi configurado no arquivo config.js.');
+  try { store = await firebaseStore(conf); S.mode = 'firebase'; }
+  catch (e) { console.error(e); return semConexao('Não foi possível conectar ao banco de dados. Confira a internet e tente de novo.'); }
   for (const col of COLS) {
     store.sub(col, list => {
       if (col === 'config') { const g = list.find(d => d.id === 'geral'); const { id, ...rest } = g || {}; S.config = rest; }

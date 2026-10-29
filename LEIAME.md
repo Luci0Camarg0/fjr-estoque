@@ -17,15 +17,11 @@ Estoque de mantas (rolos de 1,20 × 12 m) e baldes de tinta. Site: https://luci0
 - `img/`: fotos das mantas e a logo.
 - `firestore.rules`: regras de acesso do banco de dados.
 
-## Banco de dados compartilhado (Firebase, grátis)
+## Banco de dados (Firebase)
 
-Sem isso o site fica em **modo demonstração**: cada navegador guarda os próprios dados.
-
-1. Entre em https://console.firebase.google.com com uma conta Google e clique em **Criar um projeto** (ex.: `fjr-estoque`). O Google Analytics pode ficar desligado.
-2. Abra **Criação > Firestore Database > Criar banco de dados**. Local `southamerica-east1 (São Paulo)`, **modo de produção**.
-3. Na aba **Regras**, apague tudo, cole o conteúdo do arquivo `firestore.rules` e clique em **Publicar**.
-4. Abra **Configurações do projeto** (engrenagem) > **Seus apps** > ícone **</>** (Web), dê um nome e clique em **Registrar app**. Copie o objeto `firebaseConfig`.
-5. No GitHub, abra o `config.js`, clique no lápis, troque `window.FJR_FIREBASE = null;` por `window.FJR_FIREBASE = { ...o objeto copiado... };` e clique em **Commit changes**.
+O estoque fica no Firebase, projeto `fjr-estoque` (Firestore em São Paulo): todo mundo que abre o site vê os mesmos dados, em tempo real.
+A ligação está no `config.js`. Se o banco não responder, o site mostra "Sem conexão com o estoque" em vez de guardar dados só no aparelho.
+As regras de acesso estão em `firestore.rules`. Para mudar, cole o arquivo em **Firestore Database > Regras** no console do Firebase e clique em **Publicar**.
 
 ## Segurança
 
