@@ -1,0 +1,7 @@
+{
+  "hosting": {
+    "site": "fjrsolutions",
+    "public": ".",
+    "ignore": ["firebase.json", ".firebaserc", "**/.*", "LEIAME.md", "README.md", "firestore.rules"]
+  }
+}
