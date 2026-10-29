@@ -96,6 +96,12 @@ svg.dw{width:100%;height:auto;display:block}
 svg.dw text{font:600 12px var(--f-mono);fill:#fff;paint-order:stroke;stroke:rgba(0,0,0,.7);stroke-width:3px;text-anchor:middle;dominant-baseline:middle}
 svg.dw text.soft{fill:rgba(255,255,255,.85);font-weight:500}
 svg.dw text.axis{fill:var(--muted);stroke:none;font-weight:500;font-size:11px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--bg)}
+.seg button{appearance:none;border:0;background:none;padding:3px 11px;font:600 .78rem var(--f-mono);color:var(--muted);cursor:pointer;line-height:1.5}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
+.summary{align-items:center}
+.summary .seg{margin-left:auto}
 .order{display:flex;align-items:end;gap:10px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
 .pc{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:7px 10px}
 .unit.done{opacity:.5}
@@ -204,7 +210,7 @@ const CATALOGO = [
   ['verde-musgo', 'Manta Verde Musgo', '#8EE02E'], ['verde-piscina', 'Manta Verde Piscina', '#2CD3E0'], ['preto', 'Manta Preto', '#E6E8EC'],
   ['cinza', 'Manta Cinza', '#A9ACB1'], ['marrom', 'Manta Marrom', '#C47A45'], ['bege', 'Manta Bege', '#E3CDA4'],
 ];
-const S = { produtos: [], unidades: [], config: {}, loaded: new Set(), mode: 'loading', route: { page: 'lista', tipo: 'manta' }, busy: false, seeding: false, ui: { q: { manta: '', tinta: '' }, acabadas: false } };
+const S = { produtos: [], unidades: [], config: {}, loaded: new Set(), mode: 'loading', route: { page: 'lista', tipo: 'manta' }, busy: false, seeding: false, ui: { q: { manta: '', tinta: '' }, acabadas: false, m2: (() => { try { return localStorage.getItem('fjr-unidade-manta') !== 'ml'; } catch (e) { return true; } })() } };
 let store = null;
 
 /* ---------- utilidades ---------- */
@@ -305,6 +311,17 @@ function sobrasDe(W, L, cs) {
   return out.filter(r => r.w >= MIN_PECA - EPS && r.h >= MIN_PECA - EPS).map(r => ({ x: r3(r.x), y: r3(r.y), w: r3(r.w), h: r3(r.h) }));
 }
 const sobras = u => sobrasDe(largura(u), u.capacidade, cortesOf(u));
+const area = r => r.w * r.h;
+const fq = (v, un) => `${f2(v)} ${un}`;
+/* Uso da manta em metros quadrados (área cortada / que sobra, pedaços incluídos) ou lineares (comprimento do rolo). */
+function usoManta(u) {
+  const W = largura(u), L = u.capacidade, cs = cortesOf(u), fim = fimCortes(cs), sb = sobrasDe(W, L, cs);
+  if (!S.ui.m2) return { un: 'm', total: L, usado: fim, resta: r3(L - fim), inteiro: r3(L - fim), sb };
+  const total = r3(W * L), usado = r3(cs.reduce((s, c) => s + area(c), 0));
+  return { un: 'm²', total, usado, resta: r3(total - usado), inteiro: r3(W * (L - fim)), sobra: r3(sb.reduce((s, r) => s + area(r), 0)), sb };
+}
+const UN_KEY = 'fjr-unidade-manta';
+const unSeg = () => `<span class="seg" role="group" aria-label="Mostrar em"><button type="button" data-un="m2" aria-pressed="${S.ui.m2}" title="Metros quadrados">M²</button><button type="button" data-un="ml" aria-pressed="${!S.ui.m2}" title="Metros lineares">ML</button></span>`;
 /* Onde cortar um tapete a × b (pode girar). Prioridade: caber numa sobra sem avançar no rolo;
    não deixar uma tira fina demais para outro tapete; avançar o mínimo no rolo. */
 function encaixes(u, a, b) {
@@ -422,10 +439,15 @@ $('#dlg').addEventListener('click', e => { if (e.target === $('#dlg')) $('#dlg')
 function dlgUnidade(id) {
   const u = S.unidades.find(x => x.id === id); if (!u) return;
   const p = prodById(u.produtoId), k = p?.tipo || 'manta', K = KIND[k], st = estado(u), rest = restante(u);
-  const manta = k === 'manta', cs = manta ? cortesOf(u) : [], sb = manta ? sobras(u) : [];
+  const manta = k === 'manta', cs = manta ? cortesOf(u) : [], m = manta ? usoManta(u) : null, sb = manta ? m.sb : [];
+  dlgUnidade.cur = id;
+  const npc = `${sb.length} pedaço${sb.length > 1 ? 's' : ''}`;
+  const linha = !manta ? `de ${qty(u.capacidade, k)} do balde`
+    : S.ui.m2 ? `${fq(m.inteiro, 'm²')} de rolo inteiro${sb.length ? ` + ${fq(m.sobra, 'm²')} em ${npc}` : ''}`
+    : `resta ${fq(m.inteiro, 'm')} de rolo inteiro${sb.length ? ` + ${npc} sobrando` : ''}`;
   const mantaBody = () => `<div class="sep"></div>
     ${cs.length ? desenho(u, p?.cor) : ''}
-    ${sb.length ? `<div class="pcs"><h4>Pedaços sobrando</h4>${sb.map(r => `<div class="pc"><span class="mono">${medida(r)}</span><span class="muted small">comprimento × largura</span></div>`).join('')}</div>` : ''}
+    ${sb.length ? `<div class="pcs"><h4>Pedaços sobrando</h4>${sb.map(r => `<div class="pc"><span class="mono">${medida(r)}</span><span class="muted small">${S.ui.m2 ? fq(area(r), 'm²') : 'comprimento × largura'}</span></div>`).join('')}</div>` : ''}
     ${st === 'acabou' ? '' : `<form class="inline" id="fCorte" novalidate>${dimsField('Cortar um tapete desta manta')}<button class="btn btn-primary" type="submit">Ver onde cortar</button></form>`}
     ${cs.length ? `<details class="pcs"><summary class="small">Cortes feitos (${cs.length})</summary>${cs.map((c, i) => `<div class="pc"><span class="mono">${medida(c)}</span><span class="muted small">${c.data ? fDate(c.data) : ''}</span>${st === 'acabou' ? '' : `<button class="link" data-u="desfazer" data-i="${i}">Desfazer</button>`}</div>`).join('')}</details>` : ''}
     ${st === 'fechada' ? `<div class="row"><button class="btn" data-u="abrir">Marcar como aberta</button></div>` : ''}`;
@@ -434,10 +456,11 @@ function dlgUnidade(id) {
     <form class="inline" id="fRest" novalidate hidden><label class="field"><span>Quanto resta? (${K.un})</span><input class="input mono" name="v" inputmode="decimal" value="${f2(rest)}" autocomplete="off"></label><button class="btn" type="submit">Salvar</button></form>
     <div class="row">${st === 'fechada' ? `<button class="btn" data-u="abrir">Marcar como aberto</button>` : ''}<button class="link" data-u="corrigir">Corrigir quanto resta</button></div>`;
   const body = `<div class="big" style="--c:${labelColor(p?.cor)}">${unitIcon(k, p?.cor, rest / u.capacidade, st)}<div class="info">
-      <div class="row">${pill(k, st)}<span class="muted small">entrada ${fDate(u.entrada)}</span></div>
-      <div class="rest">${st === 'acabou' ? 'Acabou' : st === 'fechada' ? `${K.f ? 'Lacrada' : 'Lacrado'}, 100%: ${qty(u.capacidade, k)}` : `Usou ${qty(u.capacidade - rest, k)} · resta ${qty(rest, k)}`}</div>
-      <span class="bar"><i style="width:${st === 'acabou' ? 0 : (rest / u.capacidade * 100).toFixed(1)}%"></i></span>
-      ${st === 'aberta' ? `<span class="muted small">${manta ? `resta ${qty(rest, k)} de rolo inteiro${sb.length ? ` + ${sb.length} pedaço${sb.length > 1 ? 's' : ''} sobrando` : ''}` : `de ${qty(u.capacidade, k)} do balde`}</span>` : ''}</div></div>
+      <div class="row">${pill(k, st)}${manta && st !== 'acabou' ? unSeg() : ''}</div>
+      <span class="muted small">entrada ${fDate(u.entrada)}</span>
+      <div class="rest">${st === 'acabou' ? 'Acabou' : st === 'fechada' ? `${K.f ? 'Lacrada' : 'Lacrado'}, 100%: ${manta ? fq(m.total, m.un) : qty(u.capacidade, k)}` : manta ? `Usou ${fq(m.usado, m.un)} · resta ${fq(m.resta, m.un)}` : `Usou ${qty(u.capacidade - rest, k)} · resta ${qty(rest, k)}`}</div>
+      <span class="bar"><i style="width:${st === 'acabou' ? 0 : ((manta ? m.resta / m.total : rest / u.capacidade) * 100).toFixed(1)}%"></i></span>
+      ${st === 'aberta' ? `<span class="muted small">${linha}</span>` : ''}</div></div>
     ${st === 'acabou' ? `<p class="muted small">${K.f ? 'Esta manta acabou' : 'Este balde acabou'} e não conta mais no estoque.</p>` : ''}
     ${manta ? mantaBody() : st === 'acabou' ? '' : tintaBody()}`;
   const foot = st === 'acabou'
@@ -653,13 +676,14 @@ function pageProduto(id) {
   const ab = ativos.filter(u => estado(u) === 'aberta'), fe = ativos.length - ab.length;
   const card = u => {
     const st = estado(u), rest = restante(u), n = k === 'manta' && st !== 'acabou' ? sobras(u).length : 0;
-    const info = st === 'aberta' ? `<span class="sub">usou <b>${qty(u.capacidade - rest, k)}</b></span><span class="sub">resta ${qty(rest, k)}</span>`
-      : st === 'fechada' ? `<span class="sub">${qty(u.capacidade, k)} · 100%</span>` : '<span class="sub">fora do estoque</span>';
+    const m = k === 'manta' ? usoManta(u) : { un: K.un, total: u.capacidade, usado: r3(u.capacidade - rest), resta: rest };
+    const info = st === 'aberta' ? `<span class="sub">usou <b>${fq(m.usado, m.un)}</b></span><span class="sub">resta ${fq(m.resta, m.un)}</span>`
+      : st === 'fechada' ? `<span class="sub">${fq(m.total, m.un)} · 100%</span>` : '<span class="sub">fora do estoque</span>';
     return `<button class="unit${st === 'acabou' ? ' done' : ''}" data-unit="${u.id}" style="--c:${c}">${unitIcon(k, p.cor, rest / u.capacidade, st)}<span class="code">${esc(u.codigo)}</span>${pill(k, st)}${info}${n ? `<span class="pcs-tag">${n} pedaço${n > 1 ? 's' : ''} sobrando</span>` : ''}</button>`;
   };
   return `<div class="page">${notice()}
     <div class="ph" style="--c:${c}"><a class="back" href="#${K.tab}" aria-label="Voltar">${backIcon}</a><h1>${esc(p.nome)}</h1><div class="acts"><button class="btn" data-act="editar" data-id="${id}">Editar</button></div></div>
-    <div class="summary"><span class="pill ok">${ativos.length} em estoque</span>${fe ? `<span class="pill closed">${fe} ${word(k, 'fechada').toLowerCase()}${fe > 1 ? 's' : ''}</span>` : ''}${ab.length ? `<span class="pill hot">${ab.length} ${word(k, 'aberta').toLowerCase()}${ab.length > 1 ? 's' : ''}</span>` : ''}</div>
+    <div class="summary"><span class="pill ok">${ativos.length} em estoque</span>${fe ? `<span class="pill closed">${fe} ${word(k, 'fechada').toLowerCase()}${fe > 1 ? 's' : ''}</span>` : ''}${ab.length ? `<span class="pill hot">${ab.length} ${word(k, 'aberta').toLowerCase()}${ab.length > 1 ? 's' : ''}</span>` : ''}${k === 'manta' && ativos.length ? unSeg() : ''}</div>
     ${k === 'manta' && ativos.length ? `<form class="order" id="fPedido" novalidate>${dimsField('Novo tapete: o site acha a melhor manta e onde cortar')}<button class="btn btn-primary" type="submit">Ver onde cortar</button></form>` : ''}
     <div class="units">${ativos.map(card).join('')}<button class="unit add" data-act="adicionar" data-id="${id}"><b>+</b>Adicionar ${K.um}</button></div>
     ${acabados.length ? `<div><button class="link" data-act="acabadas">${S.ui.acabadas ? 'Esconder' : 'Mostrar'} ${acabados.length} que acabar${acabados.length > 1 ? 'am' : 'ou'}</button></div>${S.ui.acabadas ? `<div class="units">${acabados.map(card).join('')}</div>` : ''}` : ''}
@@ -695,6 +719,15 @@ function render(force) {
 }
 
 /* ---------- eventos ---------- */
+/* Liga/desliga M² ↔ ML: vale para a página da cor e para a janela da manta aberta. */
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-un]'); if (!b) return;
+  const m2 = b.dataset.un === 'm2'; if (m2 === S.ui.m2) return;
+  S.ui.m2 = m2;
+  try { localStorage.setItem(UN_KEY, m2 ? 'm2' : 'ml'); } catch (err) { /* só não lembra a escolha */ }
+  render(true);
+  if (b.closest('#dlg') && dlgUnidade.cur) dlgUnidade(dlgUnidade.cur);
+});
 document.addEventListener('submit', e => {
   if (e.target.id !== 'fPedido') return;
   e.preventDefault();
