@@ -224,6 +224,14 @@ const CATALOGO = [
   ['verde-musgo', 'Manta Verde Musgo', '#8EE02E'], ['verde-piscina', 'Manta Verde Piscina', '#2CD3E0'], ['preto', 'Manta Preto', '#E6E8EC'],
   ['cinza', 'Manta Cinza', '#A9ACB1'], ['marrom', 'Manta Marrom', '#C47A45'], ['bege', 'Manta Bege', '#E3CDA4'],
 ];
+const TINTAS = [
+  ['laranja', 'Tinta Laranja', '#F7801E'], ['vermelha', 'Tinta Vermelha', '#E8141B'], ['azul-royal', 'Tinta Azul Royal', '#1E4FE0'],
+  ['verde', 'Tinta Verde', '#1E9B3A'], ['bordo', 'Tinta Bordô', '#8E1438'], ['pink', 'Tinta Pink', '#F0288C'],
+  ['rosa-bebe', 'Tinta Rosa Bebê', '#F59AC8'], ['roxo', 'Tinta Roxo', '#8A2BE2'], ['azul-marinho', 'Tinta Azul Marinho', '#123A8C'],
+  ['azul-maritimo', 'Tinta Azul Marítimo', '#1E9BE6'], ['verde-floresta', 'Tinta Verde Floresta', '#157A45'], ['verde-musgo', 'Tinta Verde Musgo', '#7BC625'],
+  ['verde-piscina', 'Tinta Verde Piscina', '#22C3CF'], ['preto', 'Tinta Preto', '#141414'], ['cinza', 'Tinta Cinza', '#8A8D92'],
+  ['marrom', 'Tinta Marrom', '#7A4420'], ['bege', 'Tinta Bege', '#E6CF9E'],
+];
 const S = { produtos: [], unidades: [], artes: [], config: {}, loaded: new Set(), mode: 'loading', route: { page: 'lista', tipo: 'manta' }, busy: false, seeding: false, ui: { q: { manta: '', tinta: '', artes: '' }, prontas: false, acabadas: false, m2: (() => { try { return localStorage.getItem('fjr-unidade-manta') !== 'ml'; } catch (e) { return true; } })() } };
 let store = null;
 
@@ -297,7 +305,7 @@ function bucketIcon(cor, ratio = 1, st = 'fechada') {
 }
 let svgN = 0;
 const unitIcon = (tipo, cor, ratio, st) => tipo === 'tinta' ? bucketIcon(cor, ratio, st) : rollIcon(cor, ratio, st);
-const foto = p => p?.foto ? `<img src="${esc(p.foto)}" alt="${esc(p.nome)}" loading="lazy">` : unitIcon(p?.tipo, p?.cor, 1, 'fechada');
+const foto = p => p?.foto ? `<img src="${esc(p.foto)}" alt="${esc(p.nome)}" loading="lazy">` : unitIcon(p?.tipo, p?.cor, 1, 'catalogo');
 
 /* ---------- cortes da manta ----------
    Cada corte é um retângulo no rolo: x/w atravessam a largura (1,20 m), y/h correm pelo comprimento.
@@ -426,6 +434,20 @@ async function seedCatalogo() {
     }
     await store.set('config', 'geral', { ...S.config, catalogoCriado: true });
   } catch (e) { toast('Não foi possível montar o catálogo: ' + (e?.message || e), 'bad'); }
+  S.seeding = false;
+}
+/* Tintas das latas da fábrica, na cor da própria tinta. Cria uma vez; as que já existem com o mesmo nome ficam como estão. */
+async function seedTintas() {
+  if (S.seeding || !S.config.catalogoCriado || S.config.tintasCriadas) return;
+  S.seeding = true;
+  try {
+    for (let i = 0; i < TINTAS.length; i++) {
+      const [id, nome, cor] = TINTAS[i];
+      if (S.produtos.some(p => p.nome.toLowerCase() === nome.toLowerCase())) continue;
+      await store.set('produtos', 'tinta-' + id, { tipo: 'tinta', nome, cor, foto: '', ordem: i + 1, capPadrao: 18, criado: new Date().toISOString() });
+    }
+    await store.set('config', 'geral', { ...S.config, tintasCriadas: true });
+  } catch (e) { toast('Não foi possível criar as tintas: ' + (e?.message || e), 'bad'); }
   S.seeding = false;
 }
 /* Quem recebe a próxima imagem escolhida no #fotoFile (foto da cor ou arte aprovada). */
@@ -630,7 +652,7 @@ function dlgProduto(pid, tipo) {
     onOpen: d => { if (!p) d.querySelector('[name=nome]').focus(); },
   });
   const f = d.querySelector('#fProd');
-  const prev = () => { $('#fotoPrev').innerHTML = fotoVal ? `<img src="${fotoVal}" alt="">` : unitIcon(k, f.cor.value, 1, 'fechada'); d.querySelector('[data-p=semfoto]').hidden = !fotoVal; };
+  const prev = () => { $('#fotoPrev').innerHTML = fotoVal ? `<img src="${fotoVal}" alt="">` : unitIcon(k, f.cor.value, 1, 'catalogo'); d.querySelector('[data-p=semfoto]').hidden = !fotoVal; };
   f.cor.addEventListener('input', () => { if (!fotoVal) prev(); });
   fotoCb = async file => { fotoVal = await resizeImage(file); prev(); };
   d.firstElementChild.addEventListener('click', async e => {
@@ -799,7 +821,7 @@ function go(h) {
 window.addEventListener('popstate', () => { S.route = parse(location.hash.slice(1)); render(true); });
 window.addEventListener('hashchange', () => { S.route = parse(location.hash.slice(1)); render(true); });
 let tmr = 0;
-function scheduleRender() { if (tmr) return; tmr = setTimeout(() => { tmr = 0; if (ready()) seedCatalogo(); render(); }, 16); }
+function scheduleRender() { if (tmr) return; tmr = setTimeout(() => { tmr = 0; if (ready()) { seedCatalogo(); seedTintas(); } render(); }, 16); }
 function render(force) {
   const r = S.route, tipo = r.page === 'produto' ? (prodById(r.id)?.tipo || 'manta') : r.page === 'aprovados' ? 'aprovados' : r.tipo;
   document.querySelectorAll('.navs .nav').forEach(a => { if (a.dataset.nav === tipo) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
