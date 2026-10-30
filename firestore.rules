@@ -4,8 +4,8 @@ service cloud.firestore {
     // Sem login por enquanto: qualquer pessoa com o link do site vê e altera o estoque.
     // Para restringir no futuro, troque a linha de write por: allow write: if request.auth != null;
     match /{col}/{id} {
-      allow read: if col in ['produtos', 'unidades', 'config'];
-      allow write: if col in ['produtos', 'unidades', 'config'];
+      allow read: if col in ['produtos', 'unidades', 'config', 'artes'];
+      allow write: if col in ['produtos', 'unidades', 'config', 'artes'];
     }
   }
 }

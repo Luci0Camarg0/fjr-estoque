@@ -105,6 +105,18 @@ svg.dw text.axis{fill:var(--muted);stroke:none;font-weight:500;font-size:11px}
 .order{display:flex;align-items:end;gap:10px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
 .pc{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:7px 10px}
 .unit.done{opacity:.5}
+/* artes aprovadas */
+.agrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+.acard{appearance:none;display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:8px 8px 12px;border-radius:14px;border:1px solid var(--line);background:var(--surface);cursor:pointer;text-align:left;transition:border-color .15s,transform .15s}
+.acard:hover{border-color:var(--accent);transform:translateY(-2px)}
+.acard.done{opacity:.55}
+.apic{width:100%;aspect-ratio:4/3;border-radius:10px;overflow:hidden;background:#000}
+.apic img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
+.aname{font-weight:600;padding-inline:4px;line-height:1.25}
+.asub{font-size:.8rem;color:var(--muted);padding-inline:4px}
+.acard .pill{margin-left:4px}
+.aprev{border-radius:10px;overflow:hidden;background:#000;min-height:120px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.88rem;border:1px dashed var(--line)}
+.aprev img{width:100%;height:auto;max-height:60vh;object-fit:contain;display:block}
 .unit.add{border-style:dashed;background:transparent;color:var(--muted);justify-content:center;min-height:190px}
 .unit.add:hover{color:var(--ink);border-color:var(--accent)}
 .unit.add b{font-size:2rem;line-height:1;font-weight:400}
@@ -175,8 +187,9 @@ dialog footer{display:flex;justify-content:flex-end;gap:8px;padding:12px 16px;bo
   h1{font-size:1.6rem}
   .grid2{grid-template-columns:minmax(0,1fr)}
   .toolbar .btn{margin-left:0}
+  .agrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 }
-@media (prefers-reduced-motion:reduce){#toast,.pcard,.unit{transition:none}.pcard:hover,.unit:hover{transform:none}}
+@media (prefers-reduced-motion:reduce){#toast,.pcard,.unit,.acard{transition:none}.pcard:hover,.unit:hover,.acard:hover{transform:none}}
 </style>
 </head>
 <body>
@@ -185,6 +198,7 @@ dialog footer{display:flex;justify-content:flex-end;gap:8px;padding:12px 16px;bo
   <nav class="navs" aria-label="Menu">
     <a class="nav" href="#mantas" data-nav="manta">Mantas</a>
     <a class="nav" href="#tintas" data-nav="tinta">Baldes de tinta</a>
+    <a class="nav" href="#aprovados" data-nav="aprovados">Aprovados</a>
   </nav>
   <div class="mode" id="mode"><i class="dot"></i><span>Conectando…</span></div>
 </div></header>
@@ -197,7 +211,7 @@ dialog footer{display:flex;justify-content:flex-end;gap:8px;padding:12px 16px;bo
 <script>
 (() => {
 const EPS = 0.001;
-const COLS = ['produtos', 'unidades', 'config'];
+const COLS = ['produtos', 'unidades', 'config', 'artes'];
 const KIND = {
   manta: { tab: 'mantas', titulo: 'Mantas', um: 'manta', Um: 'Manta', umas: 'mantas', f: true, prefix: 'M', un: 'm', capLabel: 'Comprimento do rolo (m)', capDef: 12, addCor: 'Adicionar cor' },
   tinta: { tab: 'tintas', titulo: 'Baldes de tinta', um: 'balde', Um: 'Balde', umas: 'baldes', f: false, prefix: 'B', un: 'L', capLabel: 'Tamanho do balde (L)', capDef: 18, addCor: 'Adicionar tinta' },
@@ -210,7 +224,7 @@ const CATALOGO = [
   ['verde-musgo', 'Manta Verde Musgo', '#8EE02E'], ['verde-piscina', 'Manta Verde Piscina', '#2CD3E0'], ['preto', 'Manta Preto', '#E6E8EC'],
   ['cinza', 'Manta Cinza', '#A9ACB1'], ['marrom', 'Manta Marrom', '#C47A45'], ['bege', 'Manta Bege', '#E3CDA4'],
 ];
-const S = { produtos: [], unidades: [], config: {}, loaded: new Set(), mode: 'loading', route: { page: 'lista', tipo: 'manta' }, busy: false, seeding: false, ui: { q: { manta: '', tinta: '' }, acabadas: false, m2: (() => { try { return localStorage.getItem('fjr-unidade-manta') !== 'ml'; } catch (e) { return true; } })() } };
+const S = { produtos: [], unidades: [], artes: [], config: {}, loaded: new Set(), mode: 'loading', route: { page: 'lista', tipo: 'manta' }, busy: false, seeding: false, ui: { q: { manta: '', tinta: '', artes: '' }, prontas: false, acabadas: false, m2: (() => { try { return localStorage.getItem('fjr-unidade-manta') !== 'ml'; } catch (e) { return true; } })() } };
 let store = null;
 
 /* ---------- utilidades ---------- */
@@ -239,26 +253,47 @@ const rgb = a => `rgb(${a.map(v => Math.round(Math.max(0, Math.min(255, v)))).jo
 const shade = (h, f) => rgb(hexRgb(h).map(v => v * f));
 function labelColor(h) { const [r, g, b] = hexRgb(h); const L = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255; return L < 0.35 ? rgb([r, g, b].map(v => v + (255 - v) * (0.35 - L) * 1.6)) : rgb([r, g, b]); }
 
-/* Rolo: fechado = cheio e lacrado; aberto = mais fino conforme o que resta, com a ponta solta. */
+const tint = (h, f) => rgb(hexRgb(h).map(v => v + (255 - v) * f));
+const OUT = '#15284A';
+/* Rolo na cor da manta, com o miolo laranja e a ponta desenrolada.
+   Fechado = rolo cheio, só a beirada solta, com o lacre; aberto = mais fino e mais manta desenrolada conforme o uso. */
 function rollIcon(cor, ratio = 1, st = 'fechada') {
-  const c = cor || '#8892a6', k = st === 'acabou' ? 0.18 : 0.35 + 0.65 * Math.sqrt(Math.max(0, Math.min(1, ratio)));
-  const ry = 32 * k, cy = 84 - ry;
-  const tail = st === 'fechada' ? '' : `<path d="M40 84 H150 L156 102 H30 Z" style="fill:${shade(c, .72)}"/>`;
-  const band = st === 'fechada' ? `<rect x="84" y="${(cy - ry).toFixed(1)}" width="8" height="${(2 * ry).toFixed(1)}" fill="rgba(255,255,255,.55)"/>${seal(88, cy)}` : '';
-  return `<svg viewBox="0 0 160 110" aria-hidden="true">${tail}<rect x="40" y="${(cy - ry).toFixed(1)}" width="96" height="${(2 * ry).toFixed(1)}" rx="${ry.toFixed(1)}" style="fill:${shade(c, 1)}"/>${band}<ellipse cx="40" cy="${cy.toFixed(1)}" rx="${(ry * 0.62).toFixed(1)}" ry="${ry.toFixed(1)}" style="fill:${shade(c, .62)}"/><ellipse cx="40" cy="${cy.toFixed(1)}" rx="${(ry * 0.4).toFixed(1)}" ry="${(ry * 0.65).toFixed(1)}" style="fill:${shade(c, .8)}"/><circle cx="40" cy="${cy.toFixed(1)}" r="5" fill="#d9c3a0"/></svg>`;
+  const c = cor || '#8892a6', q = Math.max(0, Math.min(1, ratio));
+  const R = st === 'acabou' ? 9 : 11 + 13 * Math.sqrt(q), L = 76, s = st === 'fechada' ? 16 : 26 + 30 * (1 - q);
+  const sx = s * 0.75, sy = s * 0.66, n = v => v.toFixed(1);
+  const sheet = `<path d="M0 ${n(R)} H${L} L${n(L + sx)} ${n(R + sy)} H${n(sx)} Z" style="fill:${tint(c, .45)}" stroke="${OUT}" stroke-width="4" stroke-linejoin="round"/>`;
+  const body = `<path d="M0 ${n(-R)} H${L} A${n(R * .5)} ${n(R)} 0 0 1 ${L} ${n(R)} H0 Z" style="fill:${c}" stroke="${OUT}" stroke-width="4" stroke-linejoin="round"/>`
+    + `<path d="M4 ${n(-R * .55)} H${L - 2}" stroke="rgba(255,255,255,.28)" stroke-width="${n(R * .3)}" stroke-linecap="round"/>`;
+  const cap = `<ellipse cx="0" cy="0" rx="${n(R * .5)}" ry="${n(R)}" style="fill:${shade(c, .78)}" stroke="${OUT}" stroke-width="4"/>`
+    + `<ellipse cx="0" cy="0" rx="${n(R * .32)}" ry="${n(R * .64)}" fill="none" stroke="${OUT}" stroke-width="3"/>`
+    + `<ellipse cx="0" cy="0" rx="${n(R * .22)}" ry="${n(R * .44)}" fill="#F7731F"/>`;
+  const tx = 34 - R * .2, ty = 66 - R * .1;
+  const lacre = st === 'fechada' ? seal(Math.round(tx + L * .55 * .899), ty - L * .55 * .438) : '';
+  return `<svg viewBox="0 0 160 110" aria-hidden="true"><g transform="translate(${n(tx)} ${n(ty)}) rotate(-26)">${sheet}${body}${cap}</g>${lacre}</svg>`;
 }
 /* Lacre: selo laranja com visto, só em rolo ou balde 100% cheio. */
 const seal = (x, y) => `<circle cx="${x}" cy="${y.toFixed(1)}" r="12" fill="#F2552C" stroke="#fff" stroke-width="2.5"/><path d="M${x - 5.5} ${(y + 0.5).toFixed(1)} l4 4 l7.5 -8" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`;
-/* Balde: fechado = com tampa; aberto = sem tampa, tinta no nível que resta. */
+/* Lata branca com a tinta da cor escorrendo pela borda. Os pingos encurtam conforme a tinta acaba; lacrada leva o selo. */
+const DRIPS = [[64, 16], [74, 27], [86, 12], [97, 31], [108, 17]];
 function bucketIcon(cor, ratio = 1, st = 'fechada') {
-  const c = cor || '#8892a6', lv = st === 'acabou' ? 0 : Math.max(0, Math.min(1, ratio));
-  const top = 22, bot = 102, y = bot - (bot - top - 6) * lv;
-  const lid = st === 'fechada' ? `<rect x="44" y="12" width="72" height="12" rx="4" style="fill:${shade(c, .75)}"/><rect x="72" y="6" width="16" height="8" rx="3" style="fill:${shade(c, .6)}"/>` : `<ellipse cx="80" cy="${top}" rx="34" ry="6" fill="#0b0d12" stroke="#3a4150" stroke-width="2"/>`;
-  return `<svg viewBox="0 0 160 110" aria-hidden="true"><defs><clipPath id="bk${++svgN}"><path d="M46 ${top} H114 L106 ${bot} Q80 ${bot + 6} 54 ${bot} Z"/></clipPath></defs>
-    <path d="M46 ${top} H114 L106 ${bot} Q80 ${bot + 6} 54 ${bot} Z" fill="#cfd3da"/>
-    <rect x="40" y="${y.toFixed(1)}" width="80" height="${(bot + 8 - y).toFixed(1)}" clip-path="url(#bk${svgN})" style="fill:${c}"/>
-    <path d="M46 ${top} H114 L106 ${bot} Q80 ${bot + 6} 54 ${bot} Z" fill="none" stroke="#8d939e" stroke-width="2"/>
-    <path d="M48 ${top + 4} Q80 -14 112 ${top + 4}" fill="none" stroke="#8d939e" stroke-width="3"/>${lid}${st === 'fechada' ? seal(80, 64) : ''}</svg>`;
+  const c = st === 'acabou' ? '#5b606b' : cor || '#8892a6', k = st === 'acabou' ? 0.15 : 0.35 + 0.65 * Math.max(0, Math.min(1, ratio));
+  const cx = 80, rx = 34, top = 20, ry = 8, bot = 94, n = v => v.toFixed(1);
+  const rim = x => top + ry * Math.sqrt(Math.max(0, 1 - ((x - cx) / rx) ** 2));
+  let d = `M56 ${n(rim(56))}`;
+  for (const [x, len] of DRIPS) {
+    const l = len * k, w = 3.6, b = rim(x) + 5;
+    d += ` L${n(x - w)} ${n(b)} V${n(b + l)} A${w} ${w} 0 0 0 ${n(x + w)} ${n(b + l)} V${n(b)}`;
+  }
+  d += ` L${cx + rx} ${n(rim(cx + rx) + 4)} V${top} Q${cx} ${top + ry * 1.3} 56 ${n(rim(56))} Z`;
+  return `<svg viewBox="0 0 160 110" aria-hidden="true">
+    <path d="M${cx - rx} ${top} V${bot} Q${cx} ${bot + 9} ${cx + rx} ${bot} V${top}" fill="#E9EAEC" stroke="#22252B" stroke-width="2.5"/>
+    <path d="M${cx - rx} ${bot - 9} Q${cx} ${bot} ${cx + rx} ${bot - 9} V${bot} Q${cx} ${bot + 9} ${cx - rx} ${bot} Z" fill="#7D828B" stroke="#22252B" stroke-width="2.5" stroke-linejoin="round"/>
+    <ellipse cx="${cx}" cy="${top}" rx="${rx}" ry="${ry}" fill="#8D929B" stroke="#22252B" stroke-width="2.5"/>
+    <ellipse cx="${cx}" cy="${top + .5}" rx="${rx - 4}" ry="${ry - 2.5}" style="fill:${c}"/>
+    <path d="${d}" style="fill:${c};stroke:${shade(c, .55)}" stroke-width="1.2" stroke-linejoin="round"/>
+    <path d="M${cx - rx + 2} 32 Q${cx - rx - 22} 52 ${cx - rx + 4} 78" fill="none" stroke="#5E636C" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="${cx - rx + 6}" cy="32" r="4.5" fill="#E9EAEC" stroke="#5E636C" stroke-width="2.5"/>
+    ${st === 'fechada' ? seal(cx + 8, 68) : ''}</svg>`;
 }
 let svgN = 0;
 const unitIcon = (tipo, cor, ratio, st) => tipo === 'tinta' ? bucketIcon(cor, ratio, st) : rollIcon(cor, ratio, st);
@@ -393,14 +428,16 @@ async function seedCatalogo() {
   } catch (e) { toast('Não foi possível montar o catálogo: ' + (e?.message || e), 'bad'); }
   S.seeding = false;
 }
-function resizeImage(file, max = 640) {
+/* Quem recebe a próxima imagem escolhida no #fotoFile (foto da cor ou arte aprovada). */
+let fotoCb = null;
+function resizeImage(file, max = 640, q = 0.82) {
   return new Promise((res, rej) => {
     const url = URL.createObjectURL(file), img = new Image();
     img.onload = () => {
       const k = Math.min(1, max / Math.max(img.width, img.height));
       const c = document.createElement('canvas'); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
       const g = c.getContext('2d'); g.fillStyle = '#000'; g.fillRect(0, 0, c.width, c.height); g.drawImage(img, 0, 0, c.width, c.height);
-      URL.revokeObjectURL(url); res(c.toDataURL('image/jpeg', 0.82));
+      URL.revokeObjectURL(url); res(c.toDataURL('image/jpeg', q));
     };
     img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('imagem inválida')); };
     img.src = url;
@@ -595,7 +632,7 @@ function dlgProduto(pid, tipo) {
   const f = d.querySelector('#fProd');
   const prev = () => { $('#fotoPrev').innerHTML = fotoVal ? `<img src="${fotoVal}" alt="">` : unitIcon(k, f.cor.value, 1, 'fechada'); d.querySelector('[data-p=semfoto]').hidden = !fotoVal; };
   f.cor.addEventListener('input', () => { if (!fotoVal) prev(); });
-  dlgProduto.onFoto = url => { fotoVal = url; prev(); };
+  fotoCb = async file => { fotoVal = await resizeImage(file); prev(); };
   d.firstElementChild.addEventListener('click', async e => {
     const a = e.target.closest('[data-p]')?.dataset.p; if (!a) return;
     if (a === 'foto') $('#fotoFile').click();
@@ -620,9 +657,60 @@ function dlgProduto(pid, tipo) {
 }
 $('#fotoFile').addEventListener('change', async e => {
   const file = e.target.files?.[0]; e.target.value = '';
-  if (!file || !dlgProduto.onFoto) return;
-  try { dlgProduto.onFoto(await resizeImage(file)); } catch (err) { toast('Não foi possível ler essa imagem.', 'bad'); }
+  if (!file || !fotoCb) return;
+  try { await fotoCb(file); } catch (err) { toast('Não foi possível ler essa imagem.', 'bad'); }
 });
+
+/* Arte aprovada: imagem guardada no próprio banco (até ~900 KB), com os dados do pedido. */
+async function imagemArte(file) {
+  for (const [max, q] of [[1800, .85], [1400, .78], [1100, .7]]) {
+    const url = await resizeImage(file, max, q);
+    if (url.length < 900000) return url;
+  }
+  throw new Error('grande demais');
+}
+function dlgArte(id) {
+  const a = id ? S.artes.find(x => x.id === id) : null;
+  if (id && !a) return;
+  let img = a?.imagem || '';
+  const d = modal({
+    title: a ? esc(a.nome || 'Arte aprovada') : 'Adicionar arte aprovada',
+    body: `<form id="fArte" novalidate style="display:flex;flex-direction:column;gap:12px">
+      <div class="aprev" id="artePrev"></div>
+      <div class="row"><button type="button" class="btn" data-p="img">${img ? 'Trocar imagem' : 'Escolher imagem da arte'}</button>${img ? `<a class="btn" data-p="baixar" download="${esc((a?.nome || 'arte').replace(/[\\/:*?"<>|]/g, ''))}.jpg" href="${img}">Baixar imagem</a>` : ''}</div>
+      <label class="field"><span>Cliente / nome da arte</span><input class="input" name="nome" maxlength="80" value="${esc(a?.nome || '')}" placeholder="Ex.: Barão Salgaderia"></label>
+      <div class="grid2"><label class="field"><span>Medidas</span><input class="input" name="medidas" maxlength="40" value="${esc(a?.medidas || '')}" placeholder="Ex.: 1,00 × 0,60"></label>
+      <label class="field"><span>Quantidade</span><input class="input mono" name="qtde" inputmode="numeric" value="${a?.qtde || 1}"></label></div>
+      <div class="grid2"><label class="field"><span>Cor do tapete</span><input class="input" name="corTapete" maxlength="40" value="${esc(a?.corTapete || '')}" placeholder="Ex.: Vermelho"></label>
+      <label class="field"><span>Data do pedido</span><input class="input" type="date" name="data" value="${esc(a?.data || hoje())}"></label></div>
+      <label class="field"><span>Observação</span><input class="input" name="obs" maxlength="200" value="${esc(a?.obs || '')}" placeholder="Ex.: cor da letra branca, com borda flex"></label>
+      ${a ? `<div class="row"><button type="button" class="btn" data-p="pronta">${a.pronta ? 'Voltar para a produção' : 'Marcar como pronta'}</button><button type="button" class="link" data-p="excluir" style="color:var(--bad);margin-left:auto">Excluir arte</button></div>` : ''}</form>`,
+    foot: `<button class="btn" data-close>Cancelar</button><button class="btn btn-primary" form="fArte" type="submit">Salvar</button>`,
+  });
+  const f = d.querySelector('#fArte');
+  const prev = () => { $('#artePrev').innerHTML = img ? `<img src="${img}" alt="Arte">` : '<span>Nenhuma imagem escolhida</span>'; };
+  prev();
+  fotoCb = async file => { $('#artePrev').innerHTML = '<span>Preparando a imagem…</span>'; try { img = await imagemArte(file); } catch (e) { toast('Essa imagem é grande demais. Tente um print ou uma versão menor.', 'bad'); } prev(); };
+  d.firstElementChild.addEventListener('click', async e => {
+    const b = e.target.closest('[data-p]'), p = b?.dataset.p; if (!p || p === 'baixar') return;
+    if (p === 'img') $('#fotoFile').click();
+    else if (p === 'pronta') { if (await write(() => store.update('artes', a.id, { pronta: !a.pronta }))) { d.close(); toast(a.pronta ? 'Voltou para a produção.' : 'Marcada como pronta.'); } }
+    else if (p === 'excluir') {
+      if (!b.dataset.sure) { b.dataset.sure = '1'; b.textContent = 'Clique de novo para excluir'; return; }
+      if (await write(() => store.del('artes', a.id))) { d.close(); toast('Arte excluída.'); }
+    }
+  });
+  f.addEventListener('submit', async e => {
+    e.preventDefault();
+    const nome = f.nome.value.trim(), qtde = Math.round(num(f.qtde.value));
+    if (!img) return dlgErr('Escolha a imagem da arte.');
+    if (!nome) return dlgErr('Digite o cliente ou o nome da arte.');
+    if (!(qtde >= 1 && qtde <= 9999)) return dlgErr('Quantidade inválida.');
+    const data = { nome, imagem: img, medidas: f.medidas.value.trim(), qtde, corTapete: f.corTapete.value.trim(), data: f.data.value, obs: f.obs.value.trim() };
+    const ok = await write(() => a ? store.update('artes', a.id, data) : store.set('artes', uid(), { ...data, pronta: false, criado: new Date().toISOString() }));
+    if (ok) { d.close(); toast(a ? 'Salvo.' : 'Arte adicionada.'); }
+  });
+}
 
 /* ---------- páginas ---------- */
 const notice = () => '';
@@ -675,10 +763,33 @@ function pageProduto(id) {
   </div>`;
 }
 
+/* Artes aprovadas: o que já pode ir para a produção. Prontas saem da lista principal. */
+const hoje = () => new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+const fDia = s => s ? s.split('-').reverse().join('/') : '';
+function pageAprovados() {
+  return `<div class="page">
+    <section class="hero"><img src="img/logo.png" alt="FJR Solutions"><h1>Artes aprovadas</h1></section>
+    <div class="toolbar"><input class="input search" id="q" placeholder="Buscar cliente ou cor" value="${esc(S.ui.q.artes)}" autocomplete="off"><button class="btn btn-primary" data-act="nova-arte">Adicionar arte</button></div>
+    <div id="list">${artesHtml()}</div></div>`;
+}
+function artesHtml() {
+  const q = S.ui.q.artes.trim().toLowerCase();
+  const all = [...S.artes].sort((a, b) => String(b.data || '').localeCompare(String(a.data || '')) || String(b.criado).localeCompare(String(a.criado)));
+  if (!all.length) return '<div class="empty"><b>Nenhuma arte aprovada ainda</b><p>Quando o cliente aprovar, adicione a imagem da arte aqui para a produção.</p><button class="btn btn-primary" data-act="nova-arte">Adicionar arte</button></div>';
+  const hit = a => !q || [a.nome, a.corTapete, a.medidas].some(v => String(v || '').toLowerCase().includes(q));
+  const fila = all.filter(a => !a.pronta && hit(a)), prontas = all.filter(a => a.pronta && hit(a));
+  const card = a => `<button class="acard${a.pronta ? ' done' : ''}" data-arte="${a.id}"><div class="apic">${a.imagem ? `<img src="${a.imagem}" alt="" loading="lazy">` : ''}</div>
+    <div class="aname">${esc(a.nome || 'Sem nome')}</div>
+    <div class="asub">${[a.medidas, a.qtde > 1 ? `${a.qtde} un.` : '', fDia(a.data)].filter(Boolean).map(esc).join(' · ')}</div>${a.pronta ? '<span class="pill ok">Pronta</span>' : ''}</button>`;
+  return `${fila.length ? `<div class="agrid">${fila.map(card).join('')}</div>` : `<div class="empty"><b>${q ? 'Nada encontrado' : 'Nenhuma arte esperando produção'}</b></div>`}
+    ${prontas.length ? `<div style="margin-top:18px"><button class="link" data-act="prontas">${S.ui.prontas ? 'Esconder' : 'Mostrar'} ${prontas.length} pronta${prontas.length > 1 ? 's' : ''}</button></div>${S.ui.prontas ? `<div class="agrid" style="margin-top:14px">${prontas.map(card).join('')}</div>` : ''}` : ''}`;
+}
+
 /* ---------- navegação ---------- */
 function parse(h) {
   const m = (h || '').match(/^p-(.+)$/);
   if (m) return { page: 'produto', id: m[1] };
+  if (h === 'aprovados') return { page: 'aprovados', tipo: 'artes' };
   return { page: 'lista', tipo: h === 'tintas' ? 'tinta' : 'manta' };
 }
 function go(h) {
@@ -690,16 +801,16 @@ window.addEventListener('hashchange', () => { S.route = parse(location.hash.slic
 let tmr = 0;
 function scheduleRender() { if (tmr) return; tmr = setTimeout(() => { tmr = 0; if (ready()) seedCatalogo(); render(); }, 16); }
 function render(force) {
-  const r = S.route, tipo = r.page === 'produto' ? (prodById(r.id)?.tipo || 'manta') : r.tipo;
+  const r = S.route, tipo = r.page === 'produto' ? (prodById(r.id)?.tipo || 'manta') : r.page === 'aprovados' ? 'aprovados' : r.tipo;
   document.querySelectorAll('.navs .nav').forEach(a => { if (a.dataset.nav === tipo) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
   $('#mode').innerHTML = S.mode === 'firebase' ? '<i class="dot on"></i><span>Online</span>' : S.mode === 'erro' ? '<i class="dot bad"></i><span>Sem conexão</span>' : '<i class="dot"></i><span>Conectando…</span>';
   const el = $('#app');
   if (S.mode === 'erro') { el.innerHTML = `<div class="page"><div class="empty"><b>Sem conexão com o estoque</b><p>${esc(S.erro)}</p><button class="btn btn-primary" onclick="location.reload()">Tentar de novo</button></div></div>`; return; }
   if (!ready()) { el.innerHTML = '<div class="loading">Carregando…</div>'; return; }
   const ae = document.activeElement;
-  if (!force && ae && el.contains(ae) && ae.id === 'q') { $('#list').innerHTML = listaHtml(r.tipo); return; }
+  if (!force && ae && el.contains(ae) && ae.id === 'q') { $('#list').innerHTML = r.page === 'aprovados' ? artesHtml() : listaHtml(r.tipo); return; }
   const fp = $('#fPedido'), keep = fp && [fp.a.value, fp.b.value, fp.contains(ae) ? ae.name : null];
-  el.innerHTML = r.page === 'produto' ? pageProduto(r.id) : pageLista(r.tipo);
+  el.innerHTML = r.page === 'produto' ? pageProduto(r.id) : r.page === 'aprovados' ? pageAprovados() : pageLista(r.tipo);
   const np = $('#fPedido');
   if (keep && np) { np.a.value = keep[0]; np.b.value = keep[1]; if (keep[2]) np[keep[2]].focus(); }
 }
@@ -720,7 +831,7 @@ document.addEventListener('submit', e => {
   const m = lerDims(e.target); if (!m) return toast(DIMS_ERR, 'bad');
   dlgCorte(S.route.id, m[0], m[1]);
 });
-document.addEventListener('input', e => { if (e.target.id === 'q') { S.ui.q[S.route.tipo] = e.target.value; $('#list').innerHTML = listaHtml(S.route.tipo); } });
+document.addEventListener('input', e => { if (e.target.id === 'q') { S.ui.q[S.route.tipo] = e.target.value; $('#list').innerHTML = S.route.page === 'aprovados' ? artesHtml() : listaHtml(S.route.tipo); } });
 document.addEventListener('click', e => {
   const t = e.target;
   if (t.closest('#dlg')) return;
@@ -728,12 +839,16 @@ document.addEventListener('click', e => {
   if (a) { e.preventDefault(); go(a.getAttribute('href').slice(1)); return; }
   const u = t.closest('[data-unit]');
   if (u) { dlgUnidade(u.dataset.unit); return; }
+  const ar = t.closest('[data-arte]');
+  if (ar) { dlgArte(ar.dataset.arte); return; }
   const b = t.closest('[data-act]'); if (!b) return;
   const act = b.dataset.act;
   if (act === 'novo') dlgProduto(null, b.dataset.tipo);
   else if (act === 'editar') dlgProduto(b.dataset.id);
   else if (act === 'adicionar') dlgAdicionar(b.dataset.id);
   else if (act === 'acabadas') { S.ui.acabadas = !S.ui.acabadas; render(true); }
+  else if (act === 'nova-arte') dlgArte(null);
+  else if (act === 'prontas') { S.ui.prontas = !S.ui.prontas; render(true); }
 });
 
 /* ---------- início ---------- */

@@ -1,6 +1,6 @@
 # Estoque FJR Solutions
 
-Estoque de mantas (rolos de 1,20 × 12 m) e baldes de tinta. Site: https://luci0camarg0.github.io/fjr-estoque/
+Estoque de mantas (rolos de 1,20 × 12 m) e baldes de tinta. Site: https://fjrsolutions.web.app (cópia também em https://luci0camarg0.github.io/fjr-estoque/)
 
 ## Como usar
 
@@ -8,6 +8,7 @@ Estoque de mantas (rolos de 1,20 × 12 m) e baldes de tinta. Site: https://luci0
 - Clique num rolo ou balde para registrar quanto foi usado, corrigir o que resta ou marcar que acabou.
 - **Novo tapete** (dentro da cor): digite a medida (ex.: 1,00 × 0,60). O site escolhe a manta, mostra no desenho onde cortar e, ao confirmar, calcula sozinho os pedaços que sobram. Pedaços que sobraram são usados antes de avançar no rolo ou abrir uma manta lacrada.
 - Medidas sempre como **comprimento × largura**. O tapete pode ser girado ("Girar o tapete"). Um corte errado se desfaz em **Cortes feitos**.
+- **Aprovados**: artes aprovadas pelo cliente, prontas para a produção. Em **Adicionar arte**, escolha a imagem e preencha cliente, medidas, quantidade, cor do tapete e data. Ao terminar o tapete, abra a arte e clique em **Marcar como pronta**.
 - **Editar** (dentro da cor) muda nome, cor, foto e o tamanho padrão do rolo/balde.
 
 ## Arquivos
